@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react"
 import { io, type Socket } from "socket.io-client"
+import { useTranslation } from "react-i18next"
 
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
@@ -8,6 +9,7 @@ import LogItem from "./LogItem"
 import type {
   CreateItemResponse,
   ItemCreatedPayload,
+  ItemsSummaryPayload,
   LogEvent,
   ServerErrorPayload,
   Stats,
@@ -22,6 +24,7 @@ type ServerToClientEvents = {
   connect: () => void
   disconnect: (reason: Socket.DisconnectReason) => void
   "system:connected": (data: SystemConnectedPayload) => void
+  "items:summary": (data: ItemsSummaryPayload) => void
   "item-created": (data: ItemCreatedPayload) => void
   error: (data: ServerErrorPayload) => void
 }
@@ -31,6 +34,7 @@ type ClientToServerEvents = {
 }
 
 export default function SocketRedisDemo() {
+  const { t } = useTranslation()
   const [stats, setStats] = useState<Stats>({
     itemsCreated: 0,
     totalItems: 0,
@@ -66,17 +70,17 @@ export default function SocketRedisDemo() {
       return
     }
 
-    addLogEvent("Solicitud enviada", { evento: "create-item" }, "info")
+    addLogEvent(t('socketDemo.events.requestSent'), { [t('socketDemo.fields.event')]: "create-item" }, "info")
 
     socketRef.current.emit("create-item", (response) => {
       if (response.success) {
-        addLogEvent("Confirmación recibida", { success: true }, "success")
+        addLogEvent(t('socketDemo.events.confirmationReceived'), { [t('socketDemo.fields.success')]: true }, "success")
         return
       }
 
-      addLogEvent("Error en callback", { error: response.error ?? "N/A" }, "error")
+      addLogEvent(t('socketDemo.events.callbackError'), { [t('socketDemo.fields.error')]: response.error ?? t('socketDemo.fields.na') }, "error")
     })
-  }, [addLogEvent, isConnected])
+  }, [addLogEvent, isConnected, t])
 
   useEffect(() => {
     const socket: Socket<ServerToClientEvents, ClientToServerEvents> = io(SERVER_URL)
@@ -86,17 +90,34 @@ export default function SocketRedisDemo() {
       const nextSocketId = socket.id ?? ""
       setIsConnected(true)
       setSocketId(nextSocketId)
-      addLogEvent("Conexión establecida", { socketId: nextSocketId }, "success")
+      addLogEvent(t('socketDemo.events.connectionEstablished'), { [t('socketDemo.fields.socketId')]: nextSocketId }, "success")
     }
 
     const onDisconnect = (reason: Socket.DisconnectReason) => {
       setIsConnected(false)
       setSocketId("")
-      addLogEvent("Desconexión", { reason }, "error")
+      addLogEvent(t('socketDemo.events.disconnection'), { [t('socketDemo.fields.reason')]: reason }, "error")
     }
 
     const onSystemConnected = (data: SystemConnectedPayload) => {
-      addLogEvent("Sistema listo", data, "success")
+      addLogEvent(t('socketDemo.events.systemReady'), data, "success")
+    }
+
+    const onItemsSummary = (data: ItemsSummaryPayload) => {
+      setStats((previousStats) => ({
+        ...previousStats,
+        totalItems: data.existingItemsCount,
+        lastItem: data.lastCreatedItem ?? "-",
+      }))
+
+      addLogEvent(
+        t('socketDemo.events.initialState'),
+        {
+          [t('socketDemo.fields.total')]: data.existingItemsCount,
+          [t('socketDemo.fields.last')]: data.lastCreatedItem ?? t('socketDemo.fields.none'),
+        },
+        "info"
+      )
     }
 
     const onItemCreated = (data: ItemCreatedPayload) => {
@@ -107,12 +128,12 @@ export default function SocketRedisDemo() {
       }))
 
       addLogEvent(
-        "Item Creado",
+        t('socketDemo.events.itemCreated'),
         {
-          item: data.createdItem,
-          último: data.lastCreatedItem ?? "ninguno",
-          TTL: `${data.ttlSeconds}s`,
-          total: data.existingItemsCount + 1,
+          [t('socketDemo.fields.item')]: data.createdItem,
+          [t('socketDemo.fields.last')]: data.lastCreatedItem ?? t('socketDemo.fields.none'),
+          [t('socketDemo.fields.ttl')]: `${data.ttlSeconds}s`,
+          [t('socketDemo.fields.total')]: data.existingItemsCount + 1,
         },
         "success"
       )
@@ -120,10 +141,10 @@ export default function SocketRedisDemo() {
 
     const onError = (data: ServerErrorPayload) => {
       addLogEvent(
-        "Error del Servidor",
+        t('socketDemo.events.serverError'),
         {
-          mensaje: data.message,
-          código: data.code ?? "N/A",
+          [t('socketDemo.fields.message')]: data.message,
+          [t('socketDemo.fields.code')]: data.code ?? t('socketDemo.fields.na'),
         },
         "error"
       )
@@ -132,6 +153,7 @@ export default function SocketRedisDemo() {
     socket.on("connect", onConnect)
     socket.on("disconnect", onDisconnect)
     socket.on("system:connected", onSystemConnected)
+    socket.on("items:summary", onItemsSummary)
     socket.on("item-created", onItemCreated)
     socket.on("error", onError)
 
@@ -139,12 +161,13 @@ export default function SocketRedisDemo() {
       socket.off("connect", onConnect)
       socket.off("disconnect", onDisconnect)
       socket.off("system:connected", onSystemConnected)
+      socket.off("items:summary", onItemsSummary)
       socket.off("item-created", onItemCreated)
       socket.off("error", onError)
       socket.disconnect()
       socketRef.current = null
     }
-  }, [addLogEvent])
+  }, [addLogEvent, t])
 
   useEffect(() => {
     const onKeyDown = (event: KeyboardEvent) => {
@@ -171,45 +194,45 @@ export default function SocketRedisDemo() {
       <div className="mx-auto max-w-2xl">
         <Card className="rounded-2xl bg-card/95 shadow-xl backdrop-blur-sm">
           <CardHeader>
-            <CardTitle className="text-3xl">🔌 Socket.IO + Redis Demo</CardTitle>
-            <p className="text-sm text-muted-foreground">Cliente de prueba para eventos en tiempo real</p>
+            <CardTitle className="text-3xl">{t('socketDemo.title')}</CardTitle>
+            <p className="text-sm text-muted-foreground">{t('socketDemo.subtitle')}</p>
           </CardHeader>
 
           <CardContent className="space-y-5">
             <div className="flex items-center justify-center rounded-md border px-4 py-3">
               <Badge variant={isConnected ? "default" : "destructive"}>
-                {isConnected ? `✅ Conectado (${socketId})` : "⚠️ Desconectado"}
+                {isConnected ? t('socketDemo.connected', { socketId }) : t('socketDemo.disconnected')}
               </Badge>
             </div>
 
             <div className="grid grid-cols-3 gap-2">
               <Card className="bg-muted/70 p-3 text-center shadow-none">
                 <p className="text-2xl font-bold text-primary">{stats.itemsCreated}</p>
-                <p className="text-xs text-muted-foreground">Items Creados</p>
+                <p className="text-xs text-muted-foreground">{t('socketDemo.itemsCreated')}</p>
               </Card>
               <Card className="bg-muted/70 p-3 text-center shadow-none">
                 <p className="text-2xl font-bold text-primary">{stats.totalItems}</p>
-                <p className="text-xs text-muted-foreground">Total en Redis</p>
+                <p className="text-xs text-muted-foreground">{t('socketDemo.totalInRedis')}</p>
               </Card>
               <Card className="bg-muted/70 p-3 text-center shadow-none">
                 <p className="truncate text-2xl font-bold text-primary">{stats.lastItem}</p>
-                <p className="text-xs text-muted-foreground">Último Item</p>
+                <p className="text-xs text-muted-foreground">{t('socketDemo.lastItem')}</p>
               </Card>
             </div>
 
             <div className="grid grid-cols-2 gap-2">
               <Button disabled={!isConnected} onClick={handleCreateItem}>
-                Crear Item
+                {t('socketDemo.createItem')}
               </Button>
               <Button variant="outline" onClick={handleClearLog}>
-                Limpiar Log
+                {t('socketDemo.clearLog')}
               </Button>
             </div>
 
             <div className="max-h-[420px] space-y-2 overflow-y-auto rounded-md border bg-muted/40 p-3">
               {logs.length === 0 ? (
                 <p className="py-8 text-center text-sm italic text-muted-foreground">
-                  Los eventos aparecerán aquí...
+                  {t('socketDemo.noEvents')}
                 </p>
               ) : (
                 logs.map((log) => <LogItem key={log.id} log={log} />)

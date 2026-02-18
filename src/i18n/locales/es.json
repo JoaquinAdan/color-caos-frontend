@@ -1,0 +1,87 @@
+{
+  "nav": {
+    "home": "Inicio",
+    "redisExample": "Ejemplo Redis",
+    "about": "Acerca de"
+  },
+  "home": {
+    "greeting": "¡Hola {{nickname}}!",
+    "welcome": "Bienvenido de vuelta",
+    "changeNickname": "Cambiar nickname",
+    "createRoom": "Crear sala",
+    "creatingRoom": "Creando sala...",
+    "roomCreated": "¡Sala creada! Código: {{code}}",
+    "joinRoom": "Unirse a sala",
+    "joiningRoom": "Uniéndose...",
+    "roomJoined": "¡Te uniste a la sala! Código: {{code}}",
+    "roomCodePlaceholder": "Código de sala",
+    "roomCodeRequired": "El código de sala es requerido",
+    "playerIdRequired": "Error: No se encontró tu ID de jugador",
+    "join": "Unirse",
+    "cancel": "Cancelar",
+    "loading": "Cargando..."
+  },
+  "room": {
+    "title": "Sala de Juego",
+    "code": "Código",
+    "players": "Jugadores",
+    "playersList": "Lista de Jugadores",
+    "host": "Anfitrión",
+    "you": "Tú",
+    "leaveRoom": "Salir de la sala"
+  },
+  "setNickname": {
+    "title": "Configurar Nickname",
+    "label": "Nombre de usuario",
+    "placeholder": "Ingresa tu nickname",
+    "save": "Guardar",
+    "creating": "Creando jugador..."
+  },
+  "about": {
+    "title": "Página Acerca de",
+    "description": "Esta es la página de información con algunos detalles.",
+    "backToHome": "Volver al Inicio"
+  },
+  "socketDemo": {
+    "title": "🔌 Socket.IO + Redis Demo",
+    "subtitle": "Cliente de prueba para eventos en tiempo real",
+    "connected": "✅ Conectado ({{socketId}})",
+    "disconnected": "⚠️ Desconectado",
+    "itemsCreated": "Items Creados",
+    "totalInRedis": "Total en Redis",
+    "lastItem": "Último Item",
+    "createItem": "Crear Item",
+    "clearLog": "Limpiar Log",
+    "noEvents": "Los eventos aparecerán aquí...",
+    "events": {
+      "requestSent": "Solicitud enviada",
+      "confirmationReceived": "Confirmación recibida",
+      "callbackError": "Error en callback",
+      "connectionEstablished": "Conexión establecida",
+      "disconnection": "Desconexión",
+      "systemReady": "Sistema listo",
+      "initialState": "Estado inicial",
+      "itemCreated": "Item Creado",
+      "serverError": "Error del Servidor"
+    },
+    "fields": {
+      "event": "evento",
+      "success": "success",
+      "error": "error",
+      "socketId": "socketId",
+      "reason": "reason",
+      "total": "total",
+      "last": "último",
+      "none": "ninguno",
+      "item": "item",
+      "ttl": "TTL",
+      "message": "mensaje",
+      "code": "código",
+      "na": "N/A"
+    }
+  },
+  "language": {
+    "spanish": "Español",
+    "english": "English"
+  }
+}

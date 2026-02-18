@@ -27,6 +27,11 @@ export type ItemCreatedPayload = {
   ttlSeconds: number
 }
 
+export type ItemsSummaryPayload = {
+  existingItemsCount: number
+  lastCreatedItem: string | null
+}
+
 export type ServerErrorPayload = {
   message: string
   code?: string

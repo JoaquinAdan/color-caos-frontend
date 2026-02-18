@@ -1,0 +1,87 @@
+{
+  "nav": {
+    "home": "Home",
+    "redisExample": "Redis Example",
+    "about": "About"
+  },
+  "home": {
+    "greeting": "Hello {{nickname}}!",
+    "welcome": "Welcome back",
+    "changeNickname": "Change nickname",
+    "createRoom": "Create room",
+    "creatingRoom": "Creating room...",
+    "roomCreated": "Room created! Code: {{code}}",
+    "joinRoom": "Join room",
+    "joiningRoom": "Joining...",
+    "roomJoined": "You joined the room! Code: {{code}}",
+    "roomCodePlaceholder": "Room code",
+    "roomCodeRequired": "Room code is required",
+    "playerIdRequired": "Error: Player ID not found",
+    "join": "Join",
+    "cancel": "Cancel",
+    "loading": "Loading..."
+  },
+  "room": {
+    "title": "Game Room",
+    "code": "Code",
+    "players": "Players",
+    "playersList": "Players List",
+    "host": "Host",
+    "you": "You",
+    "leaveRoom": "Leave room"
+  },
+  "setNickname": {
+    "title": "Set Nickname",
+    "label": "Username",
+    "placeholder": "Enter your nickname",
+    "save": "Save",
+    "creating": "Creating player..."
+  },
+  "about": {
+    "title": "About Page",
+    "description": "This is the about page with some information.",
+    "backToHome": "Back to Home"
+  },
+  "socketDemo": {
+    "title": "🔌 Socket.IO + Redis Demo",
+    "subtitle": "Test client for real-time events",
+    "connected": "✅ Connected ({{socketId}})",
+    "disconnected": "⚠️ Disconnected",
+    "itemsCreated": "Items Created",
+    "totalInRedis": "Total in Redis",
+    "lastItem": "Last Item",
+    "createItem": "Create Item",
+    "clearLog": "Clear Log",
+    "noEvents": "Events will appear here...",
+    "events": {
+      "requestSent": "Request sent",
+      "confirmationReceived": "Confirmation received",
+      "callbackError": "Callback error",
+      "connectionEstablished": "Connection established",
+      "disconnection": "Disconnection",
+      "systemReady": "System ready",
+      "initialState": "Initial state",
+      "itemCreated": "Item Created",
+      "serverError": "Server Error"
+    },
+    "fields": {
+      "event": "event",
+      "success": "success",
+      "error": "error",
+      "socketId": "socketId",
+      "reason": "reason",
+      "total": "total",
+      "last": "last",
+      "none": "none",
+      "item": "item",
+      "ttl": "TTL",
+      "message": "message",
+      "code": "code",
+      "na": "N/A"
+    }
+  },
+  "language": {
+    "spanish": "Español",
+    "english": "English"
+  }
+}
