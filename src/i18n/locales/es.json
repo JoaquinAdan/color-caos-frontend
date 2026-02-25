@@ -28,7 +28,24 @@
     "playersList": "Lista de Jugadores",
     "host": "Anfitrión",
     "you": "Tú",
-    "leaveRoom": "Salir de la sala"
+    "kick": "Expulsar",
+    "kicking": "Expulsando...",
+    "kickedMessage": "Has sido expulsado de la sala por el anfitrión",
+    "leaveRoom": "Salir de la sala",
+    "settings": "Configuración"
+  },
+  "roomSettings": {
+    "title": "Configuración de Sala",
+    "description": "Ajusta la configuración de la sala. Solo el anfitrión puede modificar estas opciones.",
+    "maxPlayers": "Máximo de jugadores",
+    "rangeHint": "Mínimo 2, máximo 20 jugadores",
+    "rangeHintWithCurrent": "Mínimo {{min}} (hay {{current}} jugadores actualmente), máximo 20",
+    "invalidRange": "El número debe estar entre {{min}} y 20",
+    "save": "Guardar",
+    "saving": "Guardando...",
+    "cancel": "Cancelar",
+    "updateSuccess": "Configuración actualizada",
+    "updateError": "Error al actualizar configuración"
   },
   "setNickname": {
     "title": "Configurar Nickname",

@@ -9,7 +9,7 @@ export interface ClientToServerEvents {
     callback: (response: RoomCreateResponse) => void
   ) => void
   'room:get': (
-    payload: { roomCode: string },
+    payload: { roomCode: string; playerId?: string },
     callback: (response: RoomGetResponse) => void
   ) => void
   'room:join': (
@@ -19,6 +19,14 @@ export interface ClientToServerEvents {
   'room:leave': (
     payload: { roomCode: string; playerId: string },
     callback: (response: RoomLeaveResponse) => void
+  ) => void
+  'room:update-settings': (
+    payload: { roomCode: string; maxPlayers: number },
+    callback: (response: RoomUpdateSettingsResponse) => void
+  ) => void
+  'room:kick': (
+    payload: { roomCode: string; hostPlayerId: string; targetPlayerId: string },
+    callback: (response: RoomKickResponse) => void
   ) => void
   'player:create': (
     payload: { name: string },
@@ -37,6 +45,7 @@ export interface ServerToClientEvents {
   'room:created': (data: { room: RoomWithPlayers }) => void
   'room:joined': (data: { room: RoomWithPlayers }) => void
   'room:updated': (data: { room: RoomWithPlayers }) => void
+  'room:kicked': (data: { roomCode: string; message: string }) => void
   'player:created': (data: { player: Player }) => void
   error: (data: { message: string; code: string }) => void
 }
@@ -98,6 +107,19 @@ export interface RoomJoinResponse {
 
 export interface RoomLeaveResponse {
   success: boolean
+  wasDeleted?: boolean
+  error?: string
+}
+
+export interface RoomUpdateSettingsResponse {
+  success: boolean
+  room?: RoomWithPlayers
+  error?: string
+}
+
+export interface RoomKickResponse {
+  success: boolean
+  room?: RoomWithPlayers | null
   wasDeleted?: boolean
   error?: string
 }

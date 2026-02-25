@@ -28,7 +28,24 @@
     "playersList": "Players List",
     "host": "Host",
     "you": "You",
-    "leaveRoom": "Leave room"
+    "kick": "Kick",
+    "kicking": "Kicking...",
+    "kickedMessage": "You were kicked from the room by the host",
+    "leaveRoom": "Leave Room",
+    "settings": "Settings"
+  },
+  "roomSettings": {
+    "title": "Room Settings",
+    "description": "Adjust room settings. Only the host can modify these options.",
+    "maxPlayers": "Maximum players",
+    "rangeHint": "Minimum 2, maximum 20 players",
+    "rangeHintWithCurrent": "Minimum {{min}} (currently {{current}} players), maximum 20",
+    "invalidRange": "Number must be between {{min}} and 20",
+    "save": "Save",
+    "saving": "Saving...",
+    "cancel": "Cancel",
+    "updateSuccess": "Settings updated",
+    "updateError": "Error updating settings"
   },
   "setNickname": {
     "title": "Set Nickname",
