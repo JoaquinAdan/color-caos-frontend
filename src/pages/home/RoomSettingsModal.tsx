@@ -11,13 +11,15 @@ import {
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
+import type { GameMode } from '@/types/socket.types'
 
 interface RoomSettingsModalProps {
   isOpen: boolean
   onClose: () => void
   currentMaxPlayers: number
+  currentGameMode: GameMode
   currentPlayersCount: number
-  onSave: (maxPlayers: number) => void
+  onSave: (maxPlayers: number, gameMode: GameMode) => void
   isSaving?: boolean
 }
 
@@ -25,12 +27,14 @@ export const RoomSettingsModal = ({
   isOpen,
   onClose,
   currentMaxPlayers,
+  currentGameMode,
   currentPlayersCount,
   onSave,
   isSaving = false
 }: RoomSettingsModalProps) => {
   const { t } = useTranslation()
   const [maxPlayers, setMaxPlayers] = useState(currentMaxPlayers)
+  const [gameMode, setGameMode] = useState<GameMode>(currentGameMode)
   const [error, setError] = useState<string | null>(null)
 
   // El mínimo es el mayor entre 2 y el número actual de jugadores
@@ -44,13 +48,14 @@ export const RoomSettingsModal = ({
     }
 
     setError(null)
-    onSave(maxPlayers)
+    onSave(maxPlayers, gameMode)
   }
 
   const handleOpenChange = (open: boolean) => {
     if (!open) {
       // Al cerrar, resetear valores
       setMaxPlayers(currentMaxPlayers)
+      setGameMode(currentGameMode)
       setError(null)
       onClose()
     }
@@ -91,6 +96,25 @@ export const RoomSettingsModal = ({
             {error && (
               <p className="text-xs text-destructive">{error}</p>
             )}
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="gameMode">{t('roomSettings.gameMode')}</Label>
+            <select
+              id="gameMode"
+              className="w-full h-10 rounded-md border border-input bg-background px-3 text-sm"
+              value={gameMode}
+              onChange={(e) => setGameMode(e.target.value as GameMode)}
+              disabled={isSaving}
+            >
+              <option value="match_target">{t('roomSettings.modeMatchTarget')}</option>
+              <option value="avoid_target">{t('roomSettings.modeAvoidTarget')}</option>
+            </select>
+            <p className="text-xs text-muted-foreground">
+              {gameMode === 'match_target'
+                ? t('roomSettings.modeMatchTargetHelp')
+                : t('roomSettings.modeAvoidTargetHelp')}
+            </p>
           </div>
         </div>
 

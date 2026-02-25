@@ -10,10 +10,12 @@ import type { RoomWithPlayers } from '@/types/socket.types'
 interface RoomViewProps {
   currentRoom: RoomWithPlayers
   playerId: string | null
+  onStartGame: () => void
+  isStartingGame: boolean
   onLeaveRoom: () => void
 }
 
-export const RoomView = ({ currentRoom, playerId, onLeaveRoom }: RoomViewProps) => {
+export const RoomView = ({ currentRoom, playerId, onStartGame, isStartingGame, onLeaveRoom }: RoomViewProps) => {
   const { t } = useTranslation()
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [isSavingSettings, setIsSavingSettings] = useState(false)
@@ -21,12 +23,14 @@ export const RoomView = ({ currentRoom, playerId, onLeaveRoom }: RoomViewProps) 
   
   const isHost = playerId === currentRoom.hostId
 
-  const handleSaveSettings = (maxPlayers: number) => {
+  const handleSaveSettings = (maxPlayers: number, gameMode: 'match_target' | 'avoid_target') => {
+    if (!playerId) return
+
     const socket = getSocket()
     setIsSavingSettings(true)
 
     socket.emit('room:update-settings', 
-      { roomCode: currentRoom.code, maxPlayers }, 
+      { roomCode: currentRoom.code, maxPlayers, hostPlayerId: playerId, gameMode }, 
       (response) => {
         setIsSavingSettings(false)
         if (response.success) {
@@ -108,6 +112,35 @@ export const RoomView = ({ currentRoom, playerId, onLeaveRoom }: RoomViewProps) 
           ))}
         </div>
 
+        {currentRoom.completedGames > 0 && currentRoom.gameState.phase === 'finished' && Object.keys(currentRoom.scoresByPlayerId).length > 0 && (
+          <div className="mb-6 space-y-2">
+            <h3 className="text-md font-semibold">{t('room.scoreboard')}</h3>
+            {Object.entries(currentRoom.scoresByPlayerId)
+              .sort(([, a], [, b]) => b - a)
+              .map(([scorePlayerId, score]) => {
+                const scorePlayer = currentRoom.players.find((player) => player.id === scorePlayerId)
+                return (
+                  <div key={scorePlayerId} className="flex items-center justify-between p-2 rounded border">
+                    <span className="text-sm">
+                      {scorePlayer?.name ?? `${t('room.playerId')}: ${scorePlayerId.slice(0, 8)}`}
+                    </span>
+                    <span className="font-semibold">{score}</span>
+                  </div>
+                )
+              })}
+          </div>
+        )}
+
+        {isHost && (
+          <Button
+            onClick={onStartGame}
+            className="w-full mb-3"
+            disabled={isStartingGame || currentRoom.players.length < 2}
+          >
+            {isStartingGame ? t('room.startingGame') : t('room.startGame')}
+          </Button>
+        )}
+
         <Button
           onClick={onLeaveRoom}
           variant="outline"
@@ -122,6 +155,7 @@ export const RoomView = ({ currentRoom, playerId, onLeaveRoom }: RoomViewProps) 
         isOpen={isSettingsOpen}
         onClose={() => setIsSettingsOpen(false)}
         currentMaxPlayers={currentRoom.maxPlayers}
+        currentGameMode={currentRoom.gameConfig.mode}
         currentPlayersCount={currentRoom.players.length}
         onSave={handleSaveSettings}
         isSaving={isSavingSettings}

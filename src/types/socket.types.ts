@@ -21,12 +21,20 @@ export interface ClientToServerEvents {
     callback: (response: RoomLeaveResponse) => void
   ) => void
   'room:update-settings': (
-    payload: { roomCode: string; maxPlayers: number },
+    payload: { roomCode: string; maxPlayers: number; hostPlayerId: string; gameMode: GameMode },
     callback: (response: RoomUpdateSettingsResponse) => void
   ) => void
   'room:kick': (
     payload: { roomCode: string; hostPlayerId: string; targetPlayerId: string },
     callback: (response: RoomKickResponse) => void
+  ) => void
+  'game:start': (
+    payload: { roomCode: string; hostPlayerId: string },
+    callback: (response: GameStartResponse) => void
+  ) => void
+  'game:submit-answer': (
+    payload: { roomCode: string; playerId: string; color: string },
+    callback: (response: GameSubmitAnswerResponse) => void
   ) => void
   'player:create': (
     payload: { name: string },
@@ -77,6 +85,34 @@ export interface RoomWithPlayers {
   maxPlayers: number
   createdAt: number
   startedAt: number | null
+  gameConfig: GameConfig
+  gameState: GameState
+  scoresByPlayerId: Record<string, number>
+  completedGames: number
+  serverNow?: number
+}
+
+export interface GameConfig {
+  preGameCountdownSeconds: number
+  totalRounds: number
+  cardsPerRound: number
+  answerWindowSeconds: number
+  scoringWindowSeconds: number
+  availableColors: string[]
+  mode: GameMode
+}
+
+export type GamePhase = 'idle' | 'pre_game_countdown' | 'answering' | 'scoring' | 'finished'
+export type GameMode = 'match_target' | 'avoid_target'
+
+export interface GameState {
+  phase: GamePhase
+  currentRound: number
+  targetColor: string | null
+  cards: string[]
+  startedAt: number | null
+  phaseEndsAt: number | null
+  roundAnswers: Record<string, string>
 }
 
 export interface Player {
@@ -121,6 +157,19 @@ export interface RoomKickResponse {
   success: boolean
   room?: RoomWithPlayers | null
   wasDeleted?: boolean
+  error?: string
+}
+
+export interface GameStartResponse {
+  success: boolean
+  room?: RoomWithPlayers
+  error?: string
+}
+
+export interface GameSubmitAnswerResponse {
+  success: boolean
+  accepted?: boolean
+  room?: RoomWithPlayers
   error?: string
 }
 
