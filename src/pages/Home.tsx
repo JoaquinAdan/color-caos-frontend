@@ -1,33 +1,46 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect, useRef } from 'react'
 import { getSocket } from '@/lib/socket'
 import { usePlayer, useRoom, useRoomActions, LoadingView, RoomView, HomeMenuView, GameView } from './home'
+import { useSetNicknameModal } from '@/contexts/SetNicknameContext'
 
 const Home = () => {
   const [isCreatingRoom, setIsCreatingRoom] = useState(false)
   const [isJoiningRoom, setIsJoiningRoom] = useState(false)
   const [isStartingGame, setIsStartingGame] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const { openSetNicknameModal } = useSetNicknameModal()
+  const hasTriedToOpenModalRef = useRef(false)
 
   // Usar hooks personalizados
   const { nickname, playerId, isRecreatingPlayer } = usePlayer()
 
-  // Memorizar el objeto actions para evitar re-renders innecesarios
-  const roomActions = useMemo(
-    () => ({ setError, setIsCreatingRoom, setIsJoiningRoom }),
-    [setError, setIsCreatingRoom, setIsJoiningRoom]
-  )
+  // Abrir el modal automáticamente si no hay nickname (solo una vez)
+  useEffect(() => {
+    // Si ya hay un nombre en localStorage, no abrir el modal
+    const storedNickname = localStorage.getItem('nickname')
+    if (storedNickname) {
+      // El nickname existe, dejar que usePlayer lo valide
+      return
+    }
 
-  const { currentRoom, setCurrentRoom } = useRoom(
-    { playerId, nickname },
-    roomActions
-  )
+    // Solo abrir el modal si no hay nombre guardado
+    if (!hasTriedToOpenModalRef.current) {
+      hasTriedToOpenModalRef.current = true
+      openSetNicknameModal()
+    }
+  }, [openSetNicknameModal])
+
+  // Memorizar el objeto actions para evitar re-renders innecesarios
+  const roomActions = useMemo(() => ({ setError, setIsCreatingRoom, setIsJoiningRoom }), [setError, setIsCreatingRoom, setIsJoiningRoom])
+
+  const { currentRoom, setCurrentRoom } = useRoom({ playerId, nickname }, roomActions)
 
   const { createRoom, joinRoom, leaveRoom } = useRoomActions({
     playerId,
     setError,
     setIsCreatingRoom,
     setIsJoiningRoom,
-    setCurrentRoom
+    setCurrentRoom,
   })
 
   const handleStartGame = () => {
@@ -68,20 +81,13 @@ const Home = () => {
     })
   }
 
-  // Renderizado condicional según el estado
-  if (!nickname || isRecreatingPlayer) {
+  if (isRecreatingPlayer) {
     return <LoadingView />
   }
 
   if (currentRoom) {
     if (currentRoom.status === 'in_progress') {
-      return (
-        <GameView
-          currentRoom={currentRoom}
-          playerId={playerId}
-          onSubmitAnswer={handleSubmitAnswer}
-        />
-      )
+      return <GameView currentRoom={currentRoom} playerId={playerId} onSubmitAnswer={handleSubmitAnswer} />
     }
 
     return (
@@ -105,6 +111,7 @@ const Home = () => {
       onCreateRoom={createRoom}
       onJoinRoom={joinRoom}
       onClearError={() => setError(null)}
+      onOpenSetNicknameModal={openSetNicknameModal}
     />
   )
 }

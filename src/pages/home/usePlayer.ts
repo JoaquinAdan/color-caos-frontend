@@ -1,5 +1,4 @@
 import { useEffect, useRef, useState } from 'react'
-import { useNavigate } from '@tanstack/react-router'
 import { getSocket } from '@/lib/socket'
 import type { Player } from '@/types/socket.types'
 
@@ -12,7 +11,6 @@ export const usePlayer = () => {
   const isCreatingPlayerRef = useRef(false)
   const createPlayerTimeoutRef = useRef<number | null>(null)
   const playerCheckKeyRef = useRef<string | null>(null)
-  const navigate = useNavigate()
 
   // Efecto para verificar y recrear el jugador si es necesario
   useEffect(() => {
@@ -20,7 +18,6 @@ export const usePlayer = () => {
     const storedPlayerId = localStorage.getItem('playerId')
     
     if (!storedNickname) {
-      navigate({ to: '/set-nickname' })
       return
     }
 
@@ -105,7 +102,7 @@ export const usePlayer = () => {
       clearCreatePlayerTimeout()
       isCreatingPlayerRef.current = false
     }
-  }, [navigate])
+  }, [])
 
   // Escuchar actualizaciones del jugador
   useEffect(() => {
@@ -113,14 +110,33 @@ export const usePlayer = () => {
 
     const onPlayerCreated = (data: { player: Player }) => {
       console.log('Jugador actualizado:', data.player)
+      localStorage.setItem('nickname', data.player.name)
       localStorage.setItem('playerId', data.player.id)
+      setNickname(data.player.name)
       setPlayerId(data.player.id)
+      setIsRecreatingPlayer(false)
+    }
+
+    const onLocalPlayerUpdated = (event: Event) => {
+      const customEvent = event as CustomEvent<{ player?: Player }>
+      const updatedPlayer = customEvent.detail?.player
+      if (!updatedPlayer) {
+        return
+      }
+
+      localStorage.setItem('nickname', updatedPlayer.name)
+      localStorage.setItem('playerId', updatedPlayer.id)
+      setNickname(updatedPlayer.name)
+      setPlayerId(updatedPlayer.id)
+      setIsRecreatingPlayer(false)
     }
 
     socket.on('player:created', onPlayerCreated)
+    window.addEventListener('player:local-updated', onLocalPlayerUpdated)
 
     return () => {
       socket.off('player:created', onPlayerCreated)
+      window.removeEventListener('player:local-updated', onLocalPlayerUpdated)
     }
   }, [])
 
