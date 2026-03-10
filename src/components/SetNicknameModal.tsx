@@ -201,7 +201,6 @@ const SetNicknameModal = ({ open, onOpenChange }: SetNicknameModalProps) => {
                     placeholder={t('setNickname.placeholder')}
                     className="h-12 rounded-2xl border-white bg-white"
                     required
-                    autoFocus
                     disabled={isCreating}
                   />
                 </motion.div>
