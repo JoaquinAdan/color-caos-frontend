@@ -8,15 +8,37 @@ const badgeVariants = cva(
   {
     variants: {
       variant: {
-        default: "border-transparent bg-primary text-primary-foreground hover:bg-primary/80",
-        secondary: "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80",
+        default: "border-transparent bg-primary text-primary-foreground",
+        secondary: "border-transparent bg-secondary text-secondary-foreground",
         destructive:
-          "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
+          "border-transparent bg-destructive text-destructive-foreground",
         outline: "text-foreground",
       },
+      disableHover: {
+        true: "",
+        false: "",
+      },
     },
+    compoundVariants: [
+      {
+        variant: "default",
+        disableHover: false,
+        className: "hover:bg-primary/80",
+      },
+      {
+        variant: "secondary",
+        disableHover: false,
+        className: "hover:bg-secondary/80",
+      },
+      {
+        variant: "destructive",
+        disableHover: false,
+        className: "hover:bg-destructive/80",
+      },
+    ],
     defaultVariants: {
       variant: "default",
+      disableHover: false,
     },
   }
 )
@@ -25,8 +47,8 @@ export interface BadgeProps
   extends React.HTMLAttributes<HTMLDivElement>,
     VariantProps<typeof badgeVariants> {}
 
-function Badge({ className, variant, ...props }: BadgeProps) {
-  return <div className={cn(badgeVariants({ variant }), className)} {...props} />
+function Badge({ className, variant, disableHover, ...props }: BadgeProps) {
+  return <div className={cn(badgeVariants({ variant, disableHover }), className)} {...props} />
 }
 
 export { Badge }

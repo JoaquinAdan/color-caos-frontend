@@ -111,7 +111,6 @@ const Home = () => {
       onCreateRoom={createRoom}
       onJoinRoom={joinRoom}
       onClearError={() => setError(null)}
-      onOpenSetNicknameModal={openSetNicknameModal}
     />
   )
 }

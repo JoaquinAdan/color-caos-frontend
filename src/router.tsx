@@ -1,17 +1,9 @@
-import { createRootRoute, createRoute, createRouter, Outlet } from '@tanstack/react-router'
+import { createRootRoute, createRoute, createRouter } from '@tanstack/react-router'
 import Home from './pages/Home'
-
-// Root route with layout
-const RootComponent = () => {
-  return (
-    <div className="min-h-screen bg-background">
-      <Outlet />
-    </div>
-  )
-}
+import RootLayout from './layouts/RootLayout'
 
 const rootRoute = createRootRoute({
-  component: RootComponent,
+  component: RootLayout,
 })
 
 const indexRoute = createRoute({

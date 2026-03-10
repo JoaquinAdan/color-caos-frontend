@@ -1,7 +1,11 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import { motion, useReducedMotion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from './ui/dialog'
+import { Globe, UserRound } from 'lucide-react'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from './ui/dialog'
 import { Button } from './ui/button'
+import { Input } from './ui/input'
+import LanguageSelector from './LanguageSelector'
 import { getSocket } from '@/lib/socket'
 
 interface SetNicknameModalProps {
@@ -14,11 +18,28 @@ const SetNicknameModal = ({ open, onOpenChange }: SetNicknameModalProps) => {
   const [isCreating, setIsCreating] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const { t } = useTranslation()
+  const prefersReducedMotion = useReducedMotion()
+
+  useEffect(() => {
+    if (!open) {
+      return
+    }
+
+    setNickname(localStorage.getItem('nickname') ?? '')
+    setError(null)
+  }, [open])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     if (nickname.trim()) {
       const trimmedNickname = nickname.trim()
+      const storedNickname = localStorage.getItem('nickname')
+      const storedPlayerId = localStorage.getItem('playerId')
+
+      if (storedNickname === trimmedNickname && storedPlayerId) {
+        onOpenChange(false)
+        return
+      }
 
       // Guardar en localStorage
       localStorage.setItem('nickname', trimmedNickname)
@@ -60,40 +81,144 @@ const SetNicknameModal = ({ open, onOpenChange }: SetNicknameModalProps) => {
     onOpenChange(newOpen)
   }
 
+  const panelMotion = prefersReducedMotion
+    ? {}
+    : {
+        initial: { opacity: 0, y: 26, scale: 0.92, rotateX: -10 },
+        animate: { opacity: 1, y: 0, scale: 1, rotateX: 0 },
+        transition: {
+          type: 'spring' as const,
+          stiffness: 260,
+          damping: 22,
+          mass: 0.9,
+        },
+      }
+
+  const sectionMotion = prefersReducedMotion
+    ? {}
+    : {
+        initial: { opacity: 0, y: 18 },
+        animate: { opacity: 1, y: 0 },
+        transition: { duration: 0.35, ease: 'easeOut' as const },
+      }
+
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
-      <DialogContent>
-        <DialogHeader>
-          <DialogTitle>{t('setNickname.title')}</DialogTitle>
-        </DialogHeader>
+      <DialogContent
+        forceMount
+        className="max-w-md overflow-hidden rounded-[28px] border-white/70 bg-white/95 p-0 shadow-[0_30px_90px_-40px_rgba(15,23,42,0.55)] backdrop-blur-xl duration-500 data-[state=closed]:zoom-out-90 data-[state=closed]:slide-out-to-bottom-8 data-[state=closed]:fade-out-0 data-[state=open]:zoom-in-100 data-[state=open]:slide-in-from-bottom-10 sm:data-[state=closed]:slide-out-to-top-[46%] sm:data-[state=open]:slide-in-from-top-[54%]"
+      >
+        <motion.div
+          {...panelMotion}
+          className="relative [transform-style:preserve-3d]"
+        >
+          <motion.div
+            aria-hidden="true"
+            className="pointer-events-none absolute -right-8 top-8 h-28 w-28 rounded-full bg-rose-300/35 blur-2xl"
+            animate={prefersReducedMotion ? undefined : { y: [0, -10, 0], x: [0, -6, 0], scale: [1, 1.08, 1] }}
+            transition={prefersReducedMotion ? undefined : { duration: 4.5, repeat: Infinity, ease: 'easeInOut' }}
+          />
+          <motion.div
+            aria-hidden="true"
+            className="pointer-events-none absolute -left-6 bottom-16 h-24 w-24 rounded-full bg-sky-300/30 blur-2xl"
+            animate={prefersReducedMotion ? undefined : { y: [0, 8, 0], x: [0, 10, 0], scale: [1, 0.94, 1] }}
+            transition={prefersReducedMotion ? undefined : { duration: 5.2, repeat: Infinity, ease: 'easeInOut', delay: 0.2 }}
+          />
 
-        {error && (
-          <div className="p-3 rounded-md bg-destructive/10 border border-destructive/20">
-            <p className="text-sm text-destructive text-center">{error}</p>
-          </div>
-        )}
+          <motion.div
+            {...sectionMotion}
+            className="rounded-t-[28px] bg-gradient-to-r from-rose-200/80 via-amber-100/80 to-sky-200/80 px-6 pb-5 pt-8"
+          >
+            <DialogHeader className="space-y-2 text-left">
+              <motion.div
+                initial={prefersReducedMotion ? undefined : { opacity: 0, scale: 0.92 }}
+                animate={prefersReducedMotion ? undefined : { opacity: 1, scale: 1 }}
+                transition={prefersReducedMotion ? undefined : { delay: 0.08, duration: 0.28, ease: 'easeOut' }}
+              >
+            <DialogTitle className="text-2xl font-black tracking-tight text-slate-950">
+              {t('settings.title')}
+            </DialogTitle>
+              </motion.div>
+            <DialogDescription className="max-w-sm text-sm leading-6 text-slate-600">
+              {t('settings.description')}
+            </DialogDescription>
+            </DialogHeader>
+          </motion.div>
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label htmlFor="nickname-modal" className="block text-sm font-medium mb-2">
-              {t('setNickname.label')}
-            </label>
-            <input
-              id="nickname-modal"
-              type="text"
-              value={nickname}
-              onChange={(e) => setNickname(e.target.value)}
-              placeholder={t('setNickname.placeholder')}
-              className="w-full px-3 py-2 border border-input rounded-md focus:outline-none focus:ring-2 focus:ring-ring"
-              required
-              autoFocus
-              disabled={isCreating}
-            />
+          <div className="space-y-5 px-6 pb-6 pt-5">
+            <motion.section
+              {...sectionMotion}
+              transition={prefersReducedMotion ? undefined : { duration: 0.34, delay: 0.08, ease: 'easeOut' }}
+              className="space-y-3 rounded-[24px] border border-slate-200/80 bg-slate-50/85 p-4"
+            >
+              <div className="flex items-center gap-2 text-slate-900">
+                <Globe className="h-4 w-4" />
+                <h3 className="text-sm font-semibold uppercase tracking-[0.18em]">
+                  {t('settings.languageTitle')}
+                </h3>
+              </div>
+
+              <LanguageSelector />
+            </motion.section>
+
+            {error && (
+              <motion.div
+                initial={prefersReducedMotion ? undefined : { opacity: 0, y: -10, scale: 0.98 }}
+                animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0, scale: 1 }}
+                transition={prefersReducedMotion ? undefined : { duration: 0.22, ease: 'easeOut' }}
+                className="rounded-2xl border border-destructive/20 bg-destructive/10 p-3"
+              >
+                <p className="text-sm text-destructive text-center">{error}</p>
+              </motion.div>
+            )}
+
+            <motion.section
+              {...sectionMotion}
+              transition={prefersReducedMotion ? undefined : { duration: 0.34, delay: 0.16, ease: 'easeOut' }}
+              className="space-y-3 rounded-[24px] border border-slate-200/80 bg-slate-50/85 p-4"
+            >
+              <div className="flex items-center gap-2 text-slate-900">
+                <UserRound className="h-4 w-4" />
+                <h3 className="text-sm font-semibold uppercase tracking-[0.18em]">
+                  {t('settings.profileTitle')}
+                </h3>
+              </div>
+
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <motion.div
+                  initial={prefersReducedMotion ? undefined : { opacity: 0, y: 10 }}
+                  animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+                  transition={prefersReducedMotion ? undefined : { delay: 0.22, duration: 0.28, ease: 'easeOut' }}
+                >
+                  <label htmlFor="nickname-modal" className="mb-2 block text-sm font-medium text-slate-700">
+                    {t('setNickname.label')}
+                  </label>
+                  <Input
+                    id="nickname-modal"
+                    type="text"
+                    value={nickname}
+                    onChange={(e) => setNickname(e.target.value)}
+                    placeholder={t('setNickname.placeholder')}
+                    className="h-12 rounded-2xl border-white bg-white"
+                    required
+                    autoFocus
+                    disabled={isCreating}
+                  />
+                </motion.div>
+
+                <motion.div
+                  initial={prefersReducedMotion ? undefined : { opacity: 0, y: 12 }}
+                  animate={prefersReducedMotion ? undefined : { opacity: 1, y: 0 }}
+                  transition={prefersReducedMotion ? undefined : { delay: 0.28, duration: 0.28, ease: 'easeOut' }}
+                >
+                  <Button type="submit" className="h-12 w-full rounded-2xl" disabled={isCreating}>
+                    {isCreating ? t('setNickname.creating') : t('settings.saveProfile')}
+                  </Button>
+                </motion.div>
+              </form>
+            </motion.section>
           </div>
-          <Button type="submit" className="w-full" disabled={isCreating}>
-            {isCreating ? t('setNickname.creating') : t('setNickname.save')}
-          </Button>
-        </form>
+        </motion.div>
       </DialogContent>
     </Dialog>
   )
