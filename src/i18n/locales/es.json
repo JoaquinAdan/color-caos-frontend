@@ -36,8 +36,10 @@
     "lobbyBadge": "Lobby multijugador",
     "code": "Código",
     "players": "Jugadores",
+    "playersButton": "Jugadores",
     "playersList": "Lista de Jugadores",
     "playersReady": "{{count}} / {{max}} jugadores listos",
+    "viewPlayers": "Ver listado completo",
     "playersNeeded": "Falta {{count}}",
     "readyToStart": "Listos para empezar",
     "readyLabel": "Ready",
@@ -57,7 +59,8 @@
     "scoreboard": "Scoreboard",
     "playerId": "Jugador",
     "leaveRoom": "Salir de la sala",
-    "settings": "Configuración"
+    "settings": "Configuración",
+    "configureButton": "Configurar"
   },
   "game": {
     "starting": "Preparando partida",

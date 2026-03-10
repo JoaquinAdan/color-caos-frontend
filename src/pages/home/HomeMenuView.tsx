@@ -1,10 +1,12 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { AnimatePresence, motion } from 'framer-motion'
-import { ArrowRight, Plus, Sparkles, Users } from 'lucide-react'
+import { ArrowRight, Plus, Settings2, Sparkles, Users } from 'lucide-react'
+import SetNicknameModal from '@/components/SetNicknameModal'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
+import { useSetNicknameModal } from '@/contexts/SetNicknameContext'
 
 interface HomeMenuViewProps {
   nickname: string | null
@@ -25,16 +27,12 @@ export const HomeMenuView = ({
   isJoiningRoom,
   onCreateRoom,
   onJoinRoom,
-  onClearError
+  onClearError,
 }: HomeMenuViewProps) => {
   const [showJoinRoom, setShowJoinRoom] = useState(false)
   const [roomCode, setRoomCode] = useState('')
   const { t } = useTranslation()
-  const featureItems = [
-    t('home.featureFast'),
-    t('home.featureChaos'),
-    t('home.featureEveryone'),
-  ]
+  const { isOpen, openSetNicknameModal, closeSetNicknameModal } = useSetNicknameModal()
 
   const handleJoinClick = () => {
     onJoinRoom(roomCode)
@@ -48,8 +46,42 @@ export const HomeMenuView = ({
 
   return (
     <>
-      <div className="mx-auto flex min-h-[calc(100vh-4.75rem)] w-full max-w-7xl items-start px-4 pb-8 pt-5 sm:px-6 sm:pb-12 sm:pt-8 lg:items-center">
-        <div className="grid w-full gap-5 lg:grid-cols-[1.15fr_0.85fr] lg:items-center lg:gap-8">
+      <div className="relative mx-auto flex min-h-screen w-full max-w-7xl items-start px-4 pb-8 pt-24 sm:px-6 sm:pb-12 sm:pt-28 lg:items-center">
+        <motion.div
+          initial={{ opacity: 0, y: -18 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.45, ease: 'easeOut' }}
+          className="absolute left-4 right-4 top-4 z-20 sm:left-6 sm:right-6 sm:top-6"
+        >
+          <div className="mx-auto flex w-full max-w-7xl items-center justify-between gap-4 rounded-[28px] border border-white/65 bg-white/70 px-4 py-3 shadow-[0_18px_60px_-30px_rgba(15,23,42,0.45)] backdrop-blur-xl sm:px-5">
+            <div className="flex min-w-0 items-center gap-3">
+              <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-slate-950 shadow-lg shadow-slate-950/20">
+                <div className="grid grid-cols-2 gap-1">
+                  <span className="h-2.5 w-2.5 rounded-full bg-rose-400" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-amber-300" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-sky-400" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-emerald-400" />
+                </div>
+              </div>
+              <div className="min-w-0">
+                <p className="truncate text-sm font-semibold uppercase tracking-[0.28em] text-slate-500">Color Caos</p>
+                <p className="truncate text-sm text-slate-600">{t('home.quickBattles')}</p>
+              </div>
+            </div>
+
+            <Button
+              type="button"
+              variant="outline"
+              onClick={openSetNicknameModal}
+              className="rounded-full border-white/70 bg-white/80 px-3 text-xs font-semibold uppercase tracking-[0.18em] text-slate-700 shadow-sm backdrop-blur hover:bg-white sm:px-4"
+            >
+              <Settings2 className="h-4 w-4" />
+              <span className="hidden sm:inline">Settings</span>
+            </Button>
+          </div>
+        </motion.div>
+
+        <div className="grid w-full mt-6 gap-5 lg:grid-cols-[minmax(0,1.05fr)_minmax(280px,0.62fr)] lg:items-center lg:gap-8">
           <motion.section
             initial={{ opacity: 0, x: 24, scale: 0.98 }}
             animate={{ opacity: 1, x: 0, scale: 1 }}
@@ -61,19 +93,18 @@ export const HomeMenuView = ({
               <div className="pointer-events-none absolute -right-10 top-10 h-32 w-32 rounded-full bg-rose-300/30 blur-3xl" />
               <div className="pointer-events-none absolute -left-10 bottom-10 h-32 w-32 rounded-full bg-sky-300/30 blur-3xl" />
 
-              <div className="relative space-y-5 sm:space-y-6">
-                <div className="space-y-3">
-                  <div className="inline-flex items-center gap-2 rounded-full bg-slate-950 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-white sm:text-xs">
+              <div className="relative flex  flex-col  gap-6 ">
+                <div className="space-y-4">
+                  <div className="inline-flex items-center gap-2 self-start rounded-full bg-slate-950 px-3 py-1.5 text-[11px] font-semibold uppercase tracking-[0.22em] text-white sm:text-xs">
                     <Users className="h-3.5 w-3.5" />
                     Multiplayer
                   </div>
-                  <div>
-                    <h2 className="text-2xl font-black tracking-tight text-slate-950 sm:text-3xl">
-                      {t('home.createRoom')}
+
+                  <div className="max-w-xl space-y-3">
+                    <h2 className="text-3xl font-black tracking-tight text-slate-950 sm:text-4xl lg:text-[2.8rem] lg:leading-[1]">
+                      {t('home.greeting', { nickname })}
                     </h2>
-                    <p className="mt-8 text-sm leading-6 text-slate-600">
-                      {t('home.description')}
-                    </p>
+                    <p className="max-w-lg mt-8 text-sm leading-6 text-slate-600 sm:text-base sm:leading-7">{t('home.description')}</p>
                   </div>
                 </div>
 
@@ -92,29 +123,40 @@ export const HomeMenuView = ({
                 </AnimatePresence>
 
                 <div className="space-y-3">
-                  <Button
-                    onClick={onCreateRoom}
-                    variant="default"
-                    className="h-13 w-full justify-between rounded-2xl px-5 text-base font-semibold shadow-[0_20px_40px_-20px_rgba(15,23,42,0.7)] sm:h-14"
-                    disabled={isCreatingRoom || isJoiningRoom}
-                  >
-                    <span className="flex items-center gap-3">
-                      <Plus className="h-5 w-5" />
-                      {isCreatingRoom ? t('home.creatingRoom') : t('home.createRoom')}
-                    </span>
-                    <ArrowRight className="h-5 w-5" />
-                  </Button>
-
-                  {!showJoinRoom ? (
+                  <div className="grid gap-3 sm:grid-cols-[minmax(0,1fr)_180px]">
                     <Button
-                      onClick={() => setShowJoinRoom(true)}
-                      variant="outline"
-                      className="h-13 w-full rounded-2xl border-white bg-white/85 text-base font-semibold text-slate-800 hover:bg-white sm:h-14"
+                      onClick={onCreateRoom}
+                      variant="default"
+                      className="h-13 w-full justify-between rounded-2xl px-5 text-base font-semibold shadow-[0_20px_40px_-20px_rgba(15,23,42,0.7)] sm:h-14"
                       disabled={isCreatingRoom || isJoiningRoom}
                     >
-                      {t('home.joinRoom')}
+                      <span className="flex items-center gap-3">
+                        <Plus className="h-5 w-5" />
+                        {isCreatingRoom ? t('home.creatingRoom') : t('home.createRoom')}
+                      </span>
+                      <ArrowRight className="h-5 w-5" />
                     </Button>
-                  ) : null}
+
+                    {!showJoinRoom ? (
+                      <Button
+                        onClick={() => setShowJoinRoom(true)}
+                        variant="outline"
+                        className="h-13 w-full rounded-2xl border-white bg-white/85 text-base font-semibold text-slate-800 hover:bg-white sm:h-14"
+                        disabled={isCreatingRoom || isJoiningRoom}
+                      >
+                        {t('home.joinRoom')}
+                      </Button>
+                    ) : (
+                      <Button
+                        onClick={handleCancelJoin}
+                        variant="outline"
+                        className="h-13 w-full rounded-2xl border-white bg-white/85 text-base font-semibold text-slate-800 hover:bg-white sm:h-14"
+                        disabled={isJoiningRoom}
+                      >
+                        {t('home.cancel')}
+                      </Button>
+                    )}
+                  </div>
 
                   <AnimatePresence>
                     {showJoinRoom ? (
@@ -126,41 +168,29 @@ export const HomeMenuView = ({
                         className="overflow-hidden"
                       >
                         <div className="space-y-4 rounded-[24px] border border-slate-200/80 bg-slate-50/90 p-4 sm:rounded-[26px]">
-                          <div>
-                            <p className="text-sm font-semibold text-slate-900">
-                              {t('home.joinPanelTitle')}
-                            </p>
-                            <p className="mt-1 text-sm text-slate-500">
-                              {t('home.joinPanelDescription')}
-                            </p>
+                          <div className="space-y-1">
+                            <p className="text-sm font-semibold text-slate-900">{t('home.joinPanelTitle')}</p>
+                            <p className="text-sm text-slate-500">{t('home.joinPanelDescription')}</p>
                           </div>
 
-                          <Input
-                            type="text"
-                            value={roomCode}
-                            onChange={(e) => setRoomCode(e.target.value.toUpperCase())}
-                            placeholder={t('home.roomCodePlaceholder')}
-                            className="h-12 rounded-2xl border-white bg-white text-center font-mono text-base tracking-[0.34em] uppercase shadow-inner sm:h-13 sm:text-lg sm:tracking-[0.38em]"
-                            maxLength={6}
-                            disabled={isJoiningRoom}
-                          />
+                          <div className="grid gap-2 sm:grid-cols-[minmax(0,1fr)_140px]">
+                            <Input
+                              type="text"
+                              value={roomCode}
+                              onChange={(e) => setRoomCode(e.target.value.toUpperCase())}
+                              placeholder={t('home.roomCodePlaceholder')}
+                              className="h-12 rounded-2xl border-white bg-white text-center font-mono text-base tracking-[0.34em] uppercase shadow-inner sm:h-13 sm:text-lg sm:tracking-[0.38em]"
+                              maxLength={6}
+                              disabled={isJoiningRoom}
+                            />
 
-                          <div className="grid gap-2 sm:grid-cols-2">
                             <Button
                               onClick={handleJoinClick}
                               variant="default"
-                              className="h-12 rounded-2xl text-base font-semibold"
+                              className="h-12 rounded-2xl text-base font-semibold sm:h-13"
                               disabled={isJoiningRoom || !roomCode.trim()}
                             >
                               {isJoiningRoom ? t('home.joiningRoom') : t('home.join')}
-                            </Button>
-                            <Button
-                              onClick={handleCancelJoin}
-                              variant="outline"
-                              className="h-12 rounded-2xl border-white bg-white/85 text-base font-semibold text-slate-800 hover:bg-white"
-                              disabled={isJoiningRoom}
-                            >
-                              {t('home.cancel')}
                             </Button>
                           </div>
                         </div>
@@ -176,58 +206,18 @@ export const HomeMenuView = ({
             initial={{ opacity: 0, y: 28 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, ease: 'easeOut' }}
-            className="order-2 space-y-4 lg:space-y-6"
+            className="order-2 flex h-full flex-col justify-center gap-4 lg:gap-6"
           >
-            <div className="inline-flex items-center gap-2 rounded-full border border-white/70 bg-white/70 px-3 py-2 text-xs font-medium text-slate-600 shadow-sm backdrop-blur sm:px-4 sm:text-sm">
+            <div className="inline-flex max-w-fit items-center gap-2 rounded-full border border-white/70 bg-white/70 px-3 py-2 text-xs font-medium text-slate-600 shadow-sm backdrop-blur sm:px-4 sm:text-sm">
               <Sparkles className="h-4 w-4 text-amber-500" />
               <span>{t('home.tagline')}</span>
             </div>
 
-            <div className="space-y-3 sm:space-y-4">
-              <motion.h1
-                key={nickname}
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.45, delay: 0.1 }}
-                className="max-w-xl text-2xl font-black tracking-tight text-slate-950 sm:text-4xl lg:text-6xl"
-              >
-                {t('home.greeting', { nickname })}
-              </motion.h1>
-              <p className="max-w-2xl text-sm leading-6 text-slate-600 sm:text-lg sm:leading-8 lg:text-xl">
-                {t('home.description')}
-              </p>
-            </div>
-
-            <div className="flex flex-wrap gap-3">
-              {featureItems.map((item, index) => (
-                <motion.div
-                  key={item}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.35, delay: 0.15 + index * 0.08 }}
-                  className="rounded-full border border-white/75 bg-white/75 px-3 py-2 text-xs font-semibold text-slate-700 shadow-sm backdrop-blur sm:px-4 sm:text-sm"
-                >
-                  {item}
-                </motion.div>
-              ))}
-            </div>
-
-            <div className="grid gap-3 sm:max-w-xl sm:grid-cols-2">
-              <div className="rounded-[28px] border border-white/70 bg-white/70 p-4 shadow-[0_18px_50px_-30px_rgba(15,23,42,0.45)] backdrop-blur flex justify-center items-center flex-col">
-                <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
-                  {t('home.readyLabel')}
-                </p>
-                <p className="mt-2 text-xl font-bold text-slate-900">
-                  {t('home.welcome')}
-                </p>
-              </div>
-
+            <div className="space-y-3">
               {playerId && (
                 <div className="rounded-[28px] border border-white/70 bg-slate-950 p-4 text-white shadow-[0_18px_50px_-30px_rgba(15,23,42,0.9)]">
-                  <p className="text-xs text-center font-semibold uppercase tracking-[0.22em] text-white/60">
-                    {t('home.playerIdentity')}
-                  </p>
-                  <p className="mt-2 font-mono text-xs tracking-[0.28em] text-white/90">
+                  <p className="text-xs text-center font-semibold uppercase tracking-[0.22em] text-white/60">{t('home.playerIdentity')}</p>
+                  <p className="mt-3 break-all text-center font-mono text-[11px] tracking-[0.22em] text-white/90 sm:text-xs sm:tracking-[0.28em]">
                     {playerId}
                   </p>
                 </div>
@@ -236,6 +226,14 @@ export const HomeMenuView = ({
           </motion.section>
         </div>
       </div>
+      <SetNicknameModal
+        open={isOpen}
+        onOpenChange={(open) => {
+          if (!open) {
+            closeSetNicknameModal()
+          }
+        }}
+      />
     </>
   )
 }

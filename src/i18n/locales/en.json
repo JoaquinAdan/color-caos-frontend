@@ -36,8 +36,10 @@
     "lobbyBadge": "Multiplayer lobby",
     "code": "Code",
     "players": "Players",
+    "playersButton": "Players",
     "playersList": "Players List",
     "playersReady": "{{count}} / {{max}} players ready",
+    "viewPlayers": "View full list",
     "playersNeeded": "{{count}} missing",
     "readyToStart": "Ready to start",
     "readyLabel": "Ready",
@@ -57,7 +59,8 @@
     "scoreboard": "Scoreboard",
     "playerId": "Player",
     "leaveRoom": "Leave Room",
-    "settings": "Settings"
+    "settings": "Settings",
+    "configureButton": "Configure"
   },
   "game": {
     "starting": "Preparing match",

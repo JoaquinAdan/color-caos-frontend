@@ -106,7 +106,7 @@ const SetNicknameModal = ({ open, onOpenChange }: SetNicknameModalProps) => {
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent
         forceMount
-        className="max-w-md overflow-hidden rounded-[28px] border-white/70 bg-white/95 p-0 shadow-[0_30px_90px_-40px_rgba(15,23,42,0.55)] backdrop-blur-xl duration-500 data-[state=closed]:zoom-out-90 data-[state=closed]:slide-out-to-bottom-8 data-[state=closed]:fade-out-0 data-[state=open]:zoom-in-100 data-[state=open]:slide-in-from-bottom-10 sm:data-[state=closed]:slide-out-to-top-[46%] sm:data-[state=open]:slide-in-from-top-[54%]"
+        className="max-w-md overflow-hidden rounded-[28px] border-white/70 bg-white/95 p-0 shadow-[0_30px_90px_-40px_rgba(15,23,42,0.55)] backdrop-blur-xl"
       >
         <motion.div
           {...panelMotion}
