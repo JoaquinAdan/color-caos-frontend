@@ -59,6 +59,9 @@
     "scoreboard": "Scoreboard",
     "playerId": "Jugador",
     "leaveRoom": "Salir de la sala",
+    "copyCode": "Copiar código",
+    "copy": "Copiar",
+    "copied": "¡Copiado!",
     "settings": "Configuración",
     "configureButton": "Configurar"
   },
@@ -72,7 +75,8 @@
     "chooseNowAvoid": "Toca cualquier color menos el objetivo",
     "scoringNow": "Calculando puntajes...",
     "answerSent": "Respuesta enviada",
-    "waitingAnswer": "Esperando respuesta"
+    "waitingAnswer": "Esperando respuesta",
+    "scoreboard": "Puntuaciones"
   },
   "roomSettings": {
     "title": "Configuración de Sala",

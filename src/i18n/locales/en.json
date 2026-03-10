@@ -60,7 +60,10 @@
     "playerId": "Player",
     "leaveRoom": "Leave Room",
     "settings": "Settings",
-    "configureButton": "Configure"
+    "configureButton": "Configure",
+    "copyCode": "Copy code",
+    "copy": "Copy",
+    "copied": "Copied!"
   },
   "game": {
     "starting": "Preparing match",
@@ -72,7 +75,8 @@
     "chooseNowAvoid": "Tap any color except the target",
     "scoringNow": "Calculating scores...",
     "answerSent": "Answer sent",
-    "waitingAnswer": "Waiting for answer"
+    "waitingAnswer": "Waiting for answer",
+    "scoreboard": "Scores"
   },
   "roomSettings": {
     "title": "Room Settings",

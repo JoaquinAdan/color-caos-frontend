@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { motion } from 'framer-motion'
-import { DoorOpen, Play, Settings, Users } from 'lucide-react'
+import { motion, AnimatePresence } from 'framer-motion'
+import { Check, Copy, DoorOpen, Play, Settings, Users } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { RoomSettingsModal } from './RoomSettingsModal'
@@ -22,6 +22,13 @@ export const RoomView = ({ currentRoom, playerId, onStartGame, isStartingGame, o
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
   const [isPlayersOpen, setIsPlayersOpen] = useState(false)
   const [isSavingSettings, setIsSavingSettings] = useState(false)
+  const [copied, setCopied] = useState(false)
+
+  const handleCopyCode = async () => {
+    await navigator.clipboard.writeText(currentRoom.code)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
 
   const isHost = playerId === currentRoom.hostId
   const playersNeeded = Math.max(0, 2 - currentRoom.players.length)
@@ -89,7 +96,42 @@ export const RoomView = ({ currentRoom, playerId, onStartGame, isStartingGame, o
               </div>
 
               <div className="rounded-[26px] bg-slate-950 px-5 py-4 text-white shadow-[0_18px_50px_-30px_rgba(15,23,42,0.95)]">
-                <p className="text-xs font-semibold uppercase tracking-[0.24em] text-white/60">{t('room.code')}</p>
+                <div className="flex items-center justify-between">
+                  <p className="text-xs font-semibold uppercase tracking-[0.24em] text-white/60">{t('room.code')}</p>
+                  <button
+                    onClick={handleCopyCode}
+                    title={t('room.copyCode')}
+                    className="flex items-center gap-1.5 rounded-xl px-2.5 py-1.5 text-xs font-semibold text-white/60 transition-all duration-200 hover:bg-white/10 hover:text-white active:scale-95"
+                  >
+                    <AnimatePresence mode="wait" initial={false}>
+                      {copied ? (
+                        <motion.span
+                          key="check"
+                          initial={{ scale: 0.5, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          exit={{ scale: 0.5, opacity: 0 }}
+                          transition={{ duration: 0.15 }}
+                          className="flex items-center gap-1.5 text-emerald-400"
+                        >
+                          <Check className="h-4 w-4" />
+                          {t('room.copied')}
+                        </motion.span>
+                      ) : (
+                        <motion.span
+                          key="copy"
+                          initial={{ scale: 0.5, opacity: 0 }}
+                          animate={{ scale: 1, opacity: 1 }}
+                          exit={{ scale: 0.5, opacity: 0 }}
+                          transition={{ duration: 0.15 }}
+                          className="flex items-center gap-1.5"
+                        >
+                          <Copy className="h-4 w-4" />
+                          {t('room.copy')}
+                        </motion.span>
+                      )}
+                    </AnimatePresence>
+                  </button>
+                </div>
                 <p className="mt-2 font-mono text-3xl font-black tracking-[0.38em] sm:text-4xl">{currentRoom.code}</p>
               </div>
 
@@ -111,7 +153,7 @@ export const RoomView = ({ currentRoom, playerId, onStartGame, isStartingGame, o
             </div>
 
             <div className="space-y-3">
-              {isHost ? (
+              {isHost && (
                 <Button
                   onClick={onStartGame}
                   className="h-13 w-full justify-between rounded-2xl px-5 text-base font-semibold shadow-[0_20px_40px_-20px_rgba(15,23,42,0.7)] sm:h-14"
@@ -125,10 +167,6 @@ export const RoomView = ({ currentRoom, playerId, onStartGame, isStartingGame, o
                     {playersNeeded > 0 ? t('room.playersNeeded', { count: playersNeeded }) : t('room.readyLabel')}
                   </span>
                 </Button>
-              ) : (
-                <div className="rounded-[24px] border border-white/70 bg-white/75 p-4 text-sm leading-6 text-slate-600 shadow-sm backdrop-blur">
-                  {t('room.guestHint')}
-                </div>
               )}
 
               <Button
