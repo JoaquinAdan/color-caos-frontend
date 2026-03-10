@@ -46,7 +46,7 @@ export const RoomPlayersModal = ({ isOpen, onClose, currentRoom, playerId, isHos
           </DialogHeader>
         </div>
 
-        <div className="max-h-[70vh] space-y-5 overflow-y-auto px-6 pb-6 pt-5">
+        <div className="max-h-[70svh] space-y-5 overflow-y-auto px-6 pb-6 pt-5">
           <section className="space-y-3 rounded-[24px] border border-slate-200/80 bg-slate-50/85 p-4">
             {currentRoom.players.map((player) => (
               <div

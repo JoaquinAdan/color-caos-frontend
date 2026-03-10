@@ -44,7 +44,7 @@ export const RoomView = ({ currentRoom, playerId, onStartGame, isStartingGame, o
   }
 
   return (
-    <div className="mx-auto flex min-h-[calc(100vh-4.75rem)] w-full max-w-5xl items-center px-4 py-5 sm:px-6 sm:py-8">
+    <div className="mx-auto flex min-h-[calc(100svh-4.75rem)] w-full max-w-5xl items-center px-4 py-5 sm:px-6 sm:py-8">
       <motion.section
         initial={{ opacity: 0, y: 24 }}
         animate={{ opacity: 1, y: 0 }}
@@ -56,7 +56,7 @@ export const RoomView = ({ currentRoom, playerId, onStartGame, isStartingGame, o
           <div className="pointer-events-none absolute -right-8 top-10 h-32 w-32 rounded-full bg-rose-300/30 blur-3xl" />
           <div className="pointer-events-none absolute -left-8 bottom-12 h-32 w-32 rounded-full bg-sky-300/30 blur-3xl" />
 
-          <div className="relative flex min-h-[calc(100vh-11rem)] flex-col justify-between gap-5 sm:min-h-[640px] lg:min-h-[600px]">
+          <div className="relative flex min-h-[calc(100svh-11rem)] flex-col justify-between gap-5 sm:min-h-[640px] lg:min-h-[600px]">
             <div className="space-y-5">
               <div className="flex flex-col items-start justify-between gap-1">
                 <div className="space-y-3">

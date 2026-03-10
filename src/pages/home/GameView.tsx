@@ -76,7 +76,7 @@ export const GameView = ({ currentRoom, playerId, onSubmitAnswer }: GameViewProp
 
   if (currentRoom.gameState.phase === 'pre_game_countdown') {
     return (
-      <div className="container mx-auto px-4 py-8 flex items-center justify-center min-h-[calc(100vh-80px)]">
+      <div className="container mx-auto px-4 py-8 flex items-center justify-center min-h-[calc(100svh-80px)]">
         <Card className="w-full max-w-xl p-8 text-center space-y-3">
           <h1 className="text-3xl font-bold">{t('game.starting')}</h1>
           <p className="text-muted-foreground">{t('game.matchBeginsIn')}</p>
@@ -87,7 +87,7 @@ export const GameView = ({ currentRoom, playerId, onSubmitAnswer }: GameViewProp
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 flex items-center justify-center min-h-[calc(100vh-80px)]">
+    <div className="container mx-auto px-4 py-8 flex items-center justify-center min-h-[calc(100svh-80px)]">
       <Card className="w-full max-w-3xl p-6">
         <div className="mb-6 text-center space-y-2">
           <p className="text-sm text-muted-foreground">

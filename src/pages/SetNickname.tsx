@@ -77,7 +77,7 @@ const SetNickname = () => {
   }
 
   return (
-    <div className="container mx-auto px-4 py-8 flex items-center justify-center min-h-[calc(100vh-80px)]">
+    <div className="container mx-auto px-4 py-8 flex items-center justify-center min-h-[calc(100svh-80px)]">
       <Card className="w-full max-w-md p-6">
         <h1 className="text-2xl font-bold mb-6 text-center">{t('setNickname.title')}</h1>
         
