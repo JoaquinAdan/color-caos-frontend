@@ -108,7 +108,8 @@
     "description": "Cambia tu idioma y actualiza el nombre con el que entras a las partidas.",
     "languageTitle": "Idioma",
     "profileTitle": "Perfil",
-    "saveProfile": "Guardar cambios"
+    "saveProfile": "Guardar cambios",
+    "profileSaved": "Nombre de usuario modificado"
   },
   "about": {
     "title": "Página Acerca de",

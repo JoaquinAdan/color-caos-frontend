@@ -1,4 +1,5 @@
 import { Outlet } from '@tanstack/react-router'
+import { Toaster } from 'sonner'
 
 const RootLayout = () => {
   return (
@@ -9,6 +10,8 @@ const RootLayout = () => {
       <main className="relative z-10">
         <Outlet />
       </main>
+
+      <Toaster richColors />
     </div>
   )
 }

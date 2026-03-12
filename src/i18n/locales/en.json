@@ -108,7 +108,8 @@
     "description": "Change your language and update the name you use to join matches.",
     "languageTitle": "Language",
     "profileTitle": "Profile",
-    "saveProfile": "Save changes"
+    "saveProfile": "Save changes",
+    "profileSaved": "Username updated"
   },
   "about": {
     "title": "About Page",

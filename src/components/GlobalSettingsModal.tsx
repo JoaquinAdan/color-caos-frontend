@@ -7,13 +7,14 @@ import { Button } from './ui/button'
 import { Input } from './ui/input'
 import LanguageSelector from './LanguageSelector'
 import { getSocket } from '@/lib/socket'
+import { toast } from 'sonner'
 
-interface SetNicknameModalProps {
+interface GlobalSettingsModalProps {
   open: boolean
   onOpenChange: (open: boolean) => void
 }
 
-const SetNicknameModal = ({ open, onOpenChange }: SetNicknameModalProps) => {
+const GlobalSettingsModal = ({ open, onOpenChange }: GlobalSettingsModalProps) => {
   const [nickname, setNickname] = useState('')
   const [isCreating, setIsCreating] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -60,6 +61,7 @@ const SetNicknameModal = ({ open, onOpenChange }: SetNicknameModalProps) => {
           )
           setIsCreating(false)
           setNickname('')
+          toast.success(t('settings.profileSaved'))
           // Cerrar el modal
           onOpenChange(false)
           return
@@ -223,4 +225,4 @@ const SetNicknameModal = ({ open, onOpenChange }: SetNicknameModalProps) => {
   )
 }
 
-export default SetNicknameModal
+export default GlobalSettingsModal

@@ -2,7 +2,7 @@ import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { AnimatePresence, motion } from 'framer-motion'
 import { ArrowRight, Plus, Settings2, Sparkles, Users } from 'lucide-react'
-import SetNicknameModal from '@/components/SetNicknameModal'
+import GlobalSettingsModal from '@/components/GlobalSettingsModal'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { Input } from '@/components/ui/input'
@@ -226,7 +226,7 @@ export const HomeMenuView = ({
           </motion.section>
         </div>
       </div>
-      <SetNicknameModal
+      <GlobalSettingsModal
         open={isOpen}
         onOpenChange={(open) => {
           if (!open) {
