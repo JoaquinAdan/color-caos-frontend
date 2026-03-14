@@ -90,6 +90,8 @@
     "modeAvoidTarget": "Avoid target color",
     "modeMatchTargetHelp": "To score points, tap exactly the color shown above.",
     "modeAvoidTargetHelp": "To score points, tap any color except the one shown above.",
+    "answerWindow": "Answer time",
+    "answerWindowHelp": "Seconds players have to tap a card each round.",
     "save": "Save",
     "saving": "Saving...",
     "cancel": "Cancel",

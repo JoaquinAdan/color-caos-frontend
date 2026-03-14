@@ -34,13 +34,13 @@ export const RoomView = ({ currentRoom, playerId, onStartGame, isStartingGame, o
   const playersNeeded = Math.max(0, 2 - currentRoom.players.length)
   const modeLabel = currentRoom.gameConfig.mode === 'match_target' ? t('roomSettings.modeMatchTarget') : t('roomSettings.modeAvoidTarget')
 
-  const handleSaveSettings = (maxPlayers: number, gameMode: 'match_target' | 'avoid_target') => {
+  const handleSaveSettings = (maxPlayers: number, gameMode: 'match_target' | 'avoid_target', answerWindowSeconds: number) => {
     if (!playerId) return
 
     const socket = getSocket()
     setIsSavingSettings(true)
 
-    socket.emit('room:update-settings', { roomCode: currentRoom.code, maxPlayers, hostPlayerId: playerId, gameMode }, (response) => {
+    socket.emit('room:update-settings', { roomCode: currentRoom.code, maxPlayers, hostPlayerId: playerId, gameMode, answerWindowSeconds }, (response) => {
       setIsSavingSettings(false)
       if (response.success) {
         setIsSettingsOpen(false)
@@ -188,6 +188,7 @@ export const RoomView = ({ currentRoom, playerId, onStartGame, isStartingGame, o
         onClose={() => setIsSettingsOpen(false)}
         currentMaxPlayers={currentRoom.maxPlayers}
         currentGameMode={currentRoom.gameConfig.mode}
+        currentAnswerWindowSeconds={currentRoom.gameConfig.answerWindowSeconds}
         currentPlayersCount={currentRoom.players.length}
         onSave={handleSaveSettings}
         isSaving={isSavingSettings}

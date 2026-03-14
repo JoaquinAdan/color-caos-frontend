@@ -21,7 +21,7 @@ export interface ClientToServerEvents {
     callback: (response: RoomLeaveResponse) => void
   ) => void
   'room:update-settings': (
-    payload: { roomCode: string; maxPlayers: number; hostPlayerId: string; gameMode: GameMode },
+    payload: { roomCode: string; maxPlayers: number; hostPlayerId: string; gameMode: GameMode; answerWindowSeconds: number },
     callback: (response: RoomUpdateSettingsResponse) => void
   ) => void
   'room:kick': (

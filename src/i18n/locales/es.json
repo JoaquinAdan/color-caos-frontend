@@ -90,6 +90,8 @@
     "modeAvoidTarget": "Evitar color objetivo",
     "modeMatchTargetHelp": "Para sumar puntos debes tocar exactamente el color mostrado arriba.",
     "modeAvoidTargetHelp": "Para sumar puntos debes tocar cualquier color excepto el mostrado arriba.",
+    "answerWindow": "Tiempo de respuesta",
+    "answerWindowHelp": "Segundos que tienen los jugadores para tocar una tarjeta en cada ronda.",
     "save": "Guardar",
     "saving": "Guardando...",
     "cancel": "Cancelar",

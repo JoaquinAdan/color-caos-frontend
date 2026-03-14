@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
-import { Gauge, Joystick } from 'lucide-react'
+import { Gauge, Joystick, Timer } from 'lucide-react'
 import {
   Dialog,
   DialogContent,
@@ -14,13 +14,16 @@ import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import type { GameMode } from '@/types/socket.types'
 
+const ANSWER_WINDOW_STEPS = [0.5, 1, 1.5, 2, 2.5, 3, 3.5, 4, 4.5, 5]
+
 interface RoomSettingsModalProps {
   isOpen: boolean
   onClose: () => void
   currentMaxPlayers: number
   currentGameMode: GameMode
+  currentAnswerWindowSeconds: number
   currentPlayersCount: number
-  onSave: (maxPlayers: number, gameMode: GameMode) => void
+  onSave: (maxPlayers: number, gameMode: GameMode, answerWindowSeconds: number) => void
   isSaving?: boolean
 }
 
@@ -29,6 +32,7 @@ export const RoomSettingsModal = ({
   onClose,
   currentMaxPlayers,
   currentGameMode,
+  currentAnswerWindowSeconds,
   currentPlayersCount,
   onSave,
   isSaving = false
@@ -36,6 +40,7 @@ export const RoomSettingsModal = ({
   const { t } = useTranslation()
   const [maxPlayers, setMaxPlayers] = useState(currentMaxPlayers)
   const [gameMode, setGameMode] = useState<GameMode>(currentGameMode)
+  const [answerWindow, setAnswerWindow] = useState(currentAnswerWindowSeconds)
   const [error, setError] = useState<string | null>(null)
   const prefersReducedMotion = useReducedMotion()
 
@@ -49,8 +54,9 @@ export const RoomSettingsModal = ({
 
     setMaxPlayers(currentMaxPlayers)
     setGameMode(currentGameMode)
+    setAnswerWindow(currentAnswerWindowSeconds)
     setError(null)
-  }, [isOpen, currentGameMode, currentMaxPlayers])
+  }, [isOpen, currentGameMode, currentMaxPlayers, currentAnswerWindowSeconds])
 
   const handleSave = () => {
     // Validar rango
@@ -60,7 +66,7 @@ export const RoomSettingsModal = ({
     }
 
     setError(null)
-    onSave(maxPlayers, gameMode)
+    onSave(maxPlayers, gameMode, answerWindow)
   }
 
   const handleOpenChange = (open: boolean) => {
@@ -200,6 +206,45 @@ export const RoomSettingsModal = ({
                   {gameMode === 'match_target'
                     ? t('roomSettings.modeMatchTargetHelp')
                     : t('roomSettings.modeAvoidTargetHelp')}
+                </p>
+              </div>
+            </motion.section>
+
+            <motion.section
+              {...sectionMotion}
+              transition={prefersReducedMotion ? undefined : { duration: 0.34, delay: 0.24, ease: 'easeOut' }}
+              className="space-y-3 rounded-[24px] border border-slate-200/80 bg-slate-50/85 p-4"
+            >
+              <div className="flex items-center gap-2 text-slate-900">
+                <Timer className="h-4 w-4" />
+                <h3 className="text-sm font-semibold uppercase tracking-[0.18em]">
+                  {t('roomSettings.answerWindow')}
+                </h3>
+              </div>
+
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <Label className="text-slate-700">{t('roomSettings.answerWindow')}</Label>
+                  <span className="min-w-[3.5rem] rounded-xl bg-white px-2.5 py-1 text-center text-sm font-bold text-slate-900 shadow-sm border border-slate-200/80">
+                    {answerWindow}s
+                  </span>
+                </div>
+                <input
+                  type="range"
+                  min={0}
+                  max={ANSWER_WINDOW_STEPS.length - 1}
+                  step={1}
+                  value={ANSWER_WINDOW_STEPS.indexOf(answerWindow)}
+                  onChange={(e) => setAnswerWindow(ANSWER_WINDOW_STEPS[parseInt(e.target.value)])}
+                  disabled={isSaving}
+                  className="w-full accent-slate-900 disabled:opacity-50"
+                />
+                <div className="flex justify-between text-[10px] text-slate-400 font-medium">
+                  <span>0.5s</span>
+                  <span>5s</span>
+                </div>
+                <p className="text-xs leading-5 text-slate-500">
+                  {t('roomSettings.answerWindowHelp')}
                 </p>
               </div>
             </motion.section>
