@@ -78,7 +78,8 @@ export const GameView = ({ currentRoom, playerId, onSubmitAnswer }: GameViewProp
     if (gameState.phase === 'answering') {
       scoresBeforeScoringRef.current = currentRoom.scoresByPlayerId
     }
-  }, [gameState.phase, currentRoom.scoresByPlayerId])
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [gameState.phase])
 
   const alreadyAnswered = useMemo(() => {
     if (!playerId) return false
