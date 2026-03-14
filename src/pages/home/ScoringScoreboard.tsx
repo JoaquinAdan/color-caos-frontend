@@ -44,7 +44,7 @@ export const ScoringScoreboard = ({ players, scoresByPlayerId, previousScoresByP
     if (currentScore === prevScore) {
       loseAudioRef.current?.play().catch(() => {})
     }
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
 
   // Display rows (order changes between phase 1 → 2)
@@ -140,120 +140,121 @@ export const ScoringScoreboard = ({ players, scoresByPlayerId, previousScoresByP
       transition={{ duration: 0.35, ease: 'easeOut' }}
       className="w-full space-y-3"
     >
+      <LayoutGroup>
+        <div className="relative flex flex-col gap-2">
+          {rows.map((row) => {
+            const isCurrentPlayer = row.id === currentPlayerId
+            const scored = row.score > row.previousScore
+            const climbedUp = row.previousRank > row.rank
+            const droppedDown = row.previousRank < row.rank
+            const showIndicator = phase === 'done' && (climbedUp || droppedDown)
 
-      <div className="relative flex flex-col gap-2">
-        {rows.map((row) => {
-          const isCurrentPlayer = row.id === currentPlayerId
-          const scored = row.score > row.previousScore
-          const climbedUp = row.previousRank > row.rank
-          const droppedDown = row.previousRank < row.rank
-          const showIndicator = phase === 'done' && (climbedUp || droppedDown)
-
-          return (
-            <motion.div
-              key={row.id}
-              layout="position"
-              transition={{
-                layout: {
-                  type: 'spring',
-                  stiffness: 200,
-                  damping: 24,
-                  mass: 0.8,
-                },
-              }}
-              className="relative"
-            >
-              {/* Glow effect for rows that climbed up */}
-              {climbedUp && phase === 'reordering' && (
-                <motion.div
-                  className="absolute inset-0 z-0 rounded-2xl bg-emerald-400/20"
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: [0, 0.6, 0] }}
-                  transition={{ duration: 0.8, ease: 'easeInOut' }}
-                />
-              )}
-
+            return (
               <motion.div
-                initial={{ opacity: 0, x: -16 }}
-                animate={{
-                  opacity: 1,
-                  x: 0,
-                  scale: climbedUp && phase === 'reordering' ? [1, 1.03, 1] : 1,
-                }}
+                key={row.id}
+                layout="position"
                 transition={{
-                  opacity: { duration: 0.25 },
-                  scale: { duration: 0.5, ease: 'easeInOut' },
+                  layout: {
+                    type: 'spring',
+                    stiffness: 200,
+                    damping: 24,
+                    mass: 0.8,
+                  },
                 }}
-                className={`relative z-10 flex items-center gap-3 rounded-2xl border px-4 py-3 backdrop-blur transition-colors duration-300 ${
-                  isCurrentPlayer
-                    ? 'border-sky-300/80 bg-sky-50/90 shadow-md shadow-sky-200/40'
-                    : climbedUp && phase !== 'counting'
-                      ? 'border-emerald-300/80 bg-emerald-50/60'
-                      : droppedDown && phase !== 'counting'
-                        ? 'border-rose-200/80 bg-rose-50/40'
-                        : 'border-slate-200/80 bg-white/80'
-                }`}
+                className="relative"
               >
-                {/* Animated rank badge */}
-                <motion.div
-                  animate={{
-                    scale: phase === 'done' && climbedUp ? [1, 1.25, 1] : 1,
-                  }}
-                  transition={{ duration: 0.35, delay: 0.1 }}
-                  className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl text-sm font-black transition-colors duration-300 ${
-                    medalColors[row.rank] ?? 'bg-slate-100 text-slate-600'
-                  }`}
-                >
-                  {row.rank}
-                </motion.div>
-
-                {/* Name */}
-                <div className="min-w-0 flex-1">
-                  <p className={`truncate font-semibold ${isCurrentPlayer ? 'text-sky-900' : 'text-slate-800'}`}>
-                    {row.name}
-                    {isCurrentPlayer && <span className="ml-1.5 text-xs font-medium text-sky-500">({t('room.you')})</span>}
-                  </p>
-                </div>
-
-                {/* Rank change indicator (appears after reorder) */}
-                {showIndicator && (
+                {/* Glow effect for rows that climbed up */}
+                {climbedUp && phase === 'reordering' && (
                   <motion.div
-                    initial={{ opacity: 0, scale: 0, y: climbedUp ? 6 : -6 }}
-                    animate={{ opacity: 1, scale: 1, y: 0 }}
-                    transition={{ type: 'spring', stiffness: 500, damping: 22 }}
-                    className={`flex items-center gap-0.5 rounded-full px-1.5 py-0.5 text-[11px] font-bold ${
-                      climbedUp ? 'bg-emerald-100 text-emerald-600' : 'bg-rose-100 text-rose-600'
-                    }`}
-                  >
-                    {climbedUp ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
-                    {Math.abs(row.previousRank - row.rank)}
-                  </motion.div>
+                    className="absolute inset-0 z-0 rounded-2xl bg-emerald-400/20"
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: [0, 0.6, 0] }}
+                    transition={{ duration: 0.8, ease: 'easeInOut' }}
+                  />
                 )}
 
-                {/* Score + delta */}
-                <div className="flex items-center gap-1.5">
-                  <AnimatedScore
-                    from={row.previousScore}
-                    to={row.score}
-                    shouldAnimate={phase !== 'counting' || true}
-                    isCurrentPlayer={isCurrentPlayer}
-                  />
-                  {scored && phase !== 'counting' && (
-                    <motion.span
-                      initial={{ opacity: 0, y: 8, scale: 0.5 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      transition={{ delay: 0.15, type: 'spring', stiffness: 400, damping: 20 }}
-                      className="text-xs font-bold text-emerald-500"
+                <motion.div
+                  initial={{ opacity: 0, x: -16 }}
+                  animate={{
+                    opacity: 1,
+                    x: 0,
+                    scale: climbedUp && phase === 'reordering' ? [1, 1.03, 1] : 1,
+                  }}
+                  transition={{
+                    opacity: { duration: 0.25 },
+                    scale: { duration: 0.5, ease: 'easeInOut' },
+                  }}
+                  className={`relative z-10 flex items-center gap-3 rounded-2xl border px-4 py-3 backdrop-blur transition-colors duration-300 ${
+                    isCurrentPlayer
+                      ? 'border-sky-300/80 bg-sky-50/90 shadow-md shadow-sky-200/40'
+                      : climbedUp && phase !== 'counting'
+                        ? 'border-emerald-300/80 bg-emerald-50/60'
+                        : droppedDown && phase !== 'counting'
+                          ? 'border-rose-200/80 bg-rose-50/40'
+                          : 'border-slate-200/80 bg-white/80'
+                  }`}
+                >
+                  {/* Animated rank badge */}
+                  <motion.div
+                    animate={{
+                      scale: phase === 'done' && climbedUp ? [1, 1.25, 1] : 1,
+                    }}
+                    transition={{ duration: 0.35, delay: 0.1 }}
+                    className={`flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl text-sm font-black transition-colors duration-300 ${
+                      medalColors[row.rank] ?? 'bg-slate-100 text-slate-600'
+                    }`}
+                  >
+                    {row.rank}
+                  </motion.div>
+
+                  {/* Name */}
+                  <div className="min-w-0 flex-1">
+                    <p className={`truncate font-semibold ${isCurrentPlayer ? 'text-sky-900' : 'text-slate-800'}`}>
+                      {row.name}
+                      {isCurrentPlayer && <span className="ml-1.5 text-xs font-medium text-sky-500">({t('room.you')})</span>}
+                    </p>
+                  </div>
+
+                  {/* Rank change indicator (appears after reorder) */}
+                  {showIndicator && (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0, y: climbedUp ? 6 : -6 }}
+                      animate={{ opacity: 1, scale: 1, y: 0 }}
+                      transition={{ type: 'spring', stiffness: 500, damping: 22 }}
+                      className={`flex items-center gap-0.5 rounded-full px-1.5 py-0.5 text-[11px] font-bold ${
+                        climbedUp ? 'bg-emerald-100 text-emerald-600' : 'bg-rose-100 text-rose-600'
+                      }`}
                     >
-                      +{row.score - row.previousScore}
-                    </motion.span>
+                      {climbedUp ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
+                      {Math.abs(row.previousRank - row.rank)}
+                    </motion.div>
                   )}
-                </div>
+
+                  {/* Score + delta */}
+                  <div className="flex items-center gap-1.5">
+                    <AnimatedScore
+                      from={row.previousScore}
+                      to={row.score}
+                      shouldAnimate={phase !== 'counting' || true}
+                      isCurrentPlayer={isCurrentPlayer}
+                    />
+                    {scored && phase !== 'counting' && (
+                      <motion.span
+                        initial={{ opacity: 0, y: 8, scale: 0.5 }}
+                        animate={{ opacity: 1, y: 0, scale: 1 }}
+                        transition={{ delay: 0.15, type: 'spring', stiffness: 400, damping: 20 }}
+                        className="text-xs font-bold text-emerald-500"
+                      >
+                        +{row.score - row.previousScore}
+                      </motion.span>
+                    )}
+                  </div>
+                </motion.div>
               </motion.div>
-            </motion.div>
-          )
-        })}
-      </div>
+            )
+          })}
+        </div>
+      </LayoutGroup>
     </motion.div>
   )
 }
