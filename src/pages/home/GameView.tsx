@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react'
+import { useEffect, useMemo, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { motion, AnimatePresence } from 'framer-motion'
 import { Card } from '@/components/ui/card'
@@ -70,6 +70,15 @@ export const GameView = ({ currentRoom, playerId, onSubmitAnswer }: GameViewProp
     setSelectedColor(null)
     setHasTappedThisRound(false)
   }, [gameState.currentRound])
+
+  // Keep a snapshot of scores from the answering phase so ScoringScoreboard
+  // can tell if the current player scored this round
+  const scoresBeforeScoringRef = useRef<Record<string, number>>(currentRoom.scoresByPlayerId)
+  useEffect(() => {
+    if (gameState.phase === 'answering') {
+      scoresBeforeScoringRef.current = currentRoom.scoresByPlayerId
+    }
+  }, [gameState.phase, currentRoom.scoresByPlayerId])
 
   const alreadyAnswered = useMemo(() => {
     if (!playerId) return false
@@ -253,7 +262,7 @@ export const GameView = ({ currentRoom, playerId, onSubmitAnswer }: GameViewProp
 
                 return (
                   <motion.button
-                    key={`${color}-${index}`}
+                    key={`${color}`}
                     type="button"
                     initial={{ opacity: 0, scale: 0.8 }}
                     animate={{
@@ -360,6 +369,7 @@ export const GameView = ({ currentRoom, playerId, onSubmitAnswer }: GameViewProp
                   <ScoringScoreboard
                     players={currentRoom.players}
                     scoresByPlayerId={currentRoom.scoresByPlayerId}
+                    previousScoresByPlayerId={scoresBeforeScoringRef.current}
                     currentPlayerId={playerId}
                   />
                 </div>

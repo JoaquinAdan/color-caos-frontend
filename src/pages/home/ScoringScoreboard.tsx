@@ -1,12 +1,14 @@
 import { useEffect, useRef, useState, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
-import { motion } from 'framer-motion'
+import { motion, LayoutGroup } from 'framer-motion'
 import { ChevronUp, ChevronDown } from 'lucide-react'
 import type { RoomPlayer } from '@/types/socket.types'
+import losePointsSound from '@/sounds/lose-points.wav'
 
 interface ScoringScoreboardProps {
   players: RoomPlayer[]
   scoresByPlayerId: Record<string, number>
+  previousScoresByPlayerId: Record<string, number>
   currentPlayerId: string | null
 }
 
@@ -24,10 +26,26 @@ interface PlayerRow {
  *  Phase 1 – rows keep their PREVIOUS order while scores count up (≈ 600 ms)
  *  Phase 2 – rows reorder with a spring layout animation so overtakes are visible
  */
-export const ScoringScoreboard = ({ players, scoresByPlayerId, currentPlayerId }: ScoringScoreboardProps) => {
+export const ScoringScoreboard = ({ players, scoresByPlayerId, previousScoresByPlayerId, currentPlayerId }: ScoringScoreboardProps) => {
   const { t } = useTranslation()
   const prevScoresRef = useRef<Record<string, number>>({})
   const prevRanksRef = useRef<Record<string, number>>({})
+  const loseAudioRef = useRef<HTMLAudioElement | null>(null)
+
+  useEffect(() => {
+    loseAudioRef.current = new Audio(losePointsSound)
+  }, [])
+
+  // Play lose sound once on mount if current player didn't score this round
+  useEffect(() => {
+    if (!currentPlayerId) return
+    const currentScore = scoresByPlayerId[currentPlayerId] ?? 0
+    const prevScore = previousScoresByPlayerId[currentPlayerId] ?? 0
+    if (currentScore === prevScore) {
+      loseAudioRef.current?.play().catch(() => {})
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   // Display rows (order changes between phase 1 → 2)
   const [rows, setRows] = useState<PlayerRow[]>([])
@@ -50,7 +68,9 @@ export const ScoringScoreboard = ({ players, scoresByPlayerId, currentPlayerId }
 
     // New order (sorted by updated score)
     const newOrder = [...base].sort((a, b) => b.score - a.score)
-    newOrder.forEach((r, i) => { r.rank = i + 1 })
+    newOrder.forEach((r, i) => {
+      r.rank = i + 1
+    })
 
     // Old order (sorted by previous score to keep previous positions)
     const oldOrder = [...base].sort((a, b) => b.previousScore - a.previousScore)
@@ -65,7 +85,9 @@ export const ScoringScoreboard = ({ players, scoresByPlayerId, currentPlayerId }
 
     // If first render, old order = new order (no previous data)
     if (isFirstRender) {
-      oldOrder.forEach((r) => { r.previousRank = r.rank })
+      oldOrder.forEach((r) => {
+        r.previousRank = r.rank
+      })
     }
 
     return { oldOrder, newOrder }
@@ -118,6 +140,7 @@ export const ScoringScoreboard = ({ players, scoresByPlayerId, currentPlayerId }
       transition={{ duration: 0.35, ease: 'easeOut' }}
       className="w-full space-y-3"
     >
+
       <div className="relative flex flex-col gap-2">
         {rows.map((row) => {
           const isCurrentPlayer = row.id === currentPlayerId
@@ -188,9 +211,7 @@ export const ScoringScoreboard = ({ players, scoresByPlayerId, currentPlayerId }
                 <div className="min-w-0 flex-1">
                   <p className={`truncate font-semibold ${isCurrentPlayer ? 'text-sky-900' : 'text-slate-800'}`}>
                     {row.name}
-                    {isCurrentPlayer && (
-                      <span className="ml-1.5 text-xs font-medium text-sky-500">({t('room.you')})</span>
-                    )}
+                    {isCurrentPlayer && <span className="ml-1.5 text-xs font-medium text-sky-500">({t('room.you')})</span>}
                   </p>
                 </div>
 
@@ -201,9 +222,7 @@ export const ScoringScoreboard = ({ players, scoresByPlayerId, currentPlayerId }
                     animate={{ opacity: 1, scale: 1, y: 0 }}
                     transition={{ type: 'spring', stiffness: 500, damping: 22 }}
                     className={`flex items-center gap-0.5 rounded-full px-1.5 py-0.5 text-[11px] font-bold ${
-                      climbedUp
-                        ? 'bg-emerald-100 text-emerald-600'
-                        : 'bg-rose-100 text-rose-600'
+                      climbedUp ? 'bg-emerald-100 text-emerald-600' : 'bg-rose-100 text-rose-600'
                     }`}
                   >
                     {climbedUp ? <ChevronUp className="h-3 w-3" /> : <ChevronDown className="h-3 w-3" />}
@@ -300,9 +319,7 @@ const AnimatedScore = ({ from, to, shouldAnimate, isCurrentPlayer }: AnimatedSco
       initial={display !== from ? { scale: 1.35 } : false}
       animate={{ scale: 1 }}
       transition={{ type: 'spring', stiffness: 500, damping: 20 }}
-      className={`min-w-[2ch] text-right text-lg font-black tabular-nums ${
-        isCurrentPlayer ? 'text-sky-900' : 'text-slate-900'
-      }`}
+      className={`min-w-[2ch] text-right text-lg font-black tabular-nums ${isCurrentPlayer ? 'text-sky-900' : 'text-slate-900'}`}
     >
       {display}
     </motion.span>
