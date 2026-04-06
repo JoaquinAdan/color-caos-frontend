@@ -209,7 +209,6 @@ export const RoomSettingsModal = ({
                 </p>
               </div>
             </motion.section>
-
             <motion.section
               {...sectionMotion}
               transition={prefersReducedMotion ? undefined : { duration: 0.34, delay: 0.24, ease: 'easeOut' }}

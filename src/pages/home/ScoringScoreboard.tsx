@@ -4,6 +4,8 @@ import { motion, LayoutGroup } from 'framer-motion'
 import { ChevronUp, ChevronDown } from 'lucide-react'
 import type { RoomPlayer } from '@/types/socket.types'
 import losePointsSound from '@/sounds/lose-points.wav'
+import winPointsSound from '@/sounds/win-points.mp3'
+import firstPlaceSound from '@/sounds/first-place.mp3'
 
 interface ScoringScoreboardProps {
   players: RoomPlayer[]
@@ -21,6 +23,9 @@ interface PlayerRow {
   previousRank: number
 }
 
+const sortPlayersByScore = (players: RoomPlayer[], scoresByPlayerId: Record<string, number>) =>
+  [...players].sort((a, b) => (scoresByPlayerId[b.id] ?? 0) - (scoresByPlayerId[a.id] ?? 0))
+
 /**
  * Two-phase animated scoreboard:
  *  Phase 1 – rows keep their PREVIOUS order while scores count up (≈ 600 ms)
@@ -31,21 +36,41 @@ export const ScoringScoreboard = ({ players, scoresByPlayerId, previousScoresByP
   const prevScoresRef = useRef<Record<string, number>>({})
   const prevRanksRef = useRef<Record<string, number>>({})
   const loseAudioRef = useRef<HTMLAudioElement | null>(null)
+  const winAudioRef = useRef<HTMLAudioElement | null>(null)
+  const firstPlaceAudioRef = useRef<HTMLAudioElement | null>(null)
 
   useEffect(() => {
     loseAudioRef.current = new Audio(losePointsSound)
+    winAudioRef.current = new Audio(winPointsSound)
+    firstPlaceAudioRef.current = new Audio(firstPlaceSound)
   }, [])
 
-  // Play lose sound once on mount if current player didn't score this round
+  // Play exactly one scoreboard sound for the current player on mount.
   useEffect(() => {
     if (!currentPlayerId) return
+
     const currentScore = scoresByPlayerId[currentPlayerId] ?? 0
     const prevScore = previousScoresByPlayerId[currentPlayerId] ?? 0
+    const previousRank =
+      sortPlayersByScore(players, previousScoresByPlayerId).findIndex((player) => player.id === currentPlayerId) + 1
+    const currentRank = sortPlayersByScore(players, scoresByPlayerId).findIndex((player) => player.id === currentPlayerId) + 1
+    const gainedPoints = currentScore > prevScore
+    const reachedFirstPlace = previousRank !== 1 && currentRank === 1
+
+    if (reachedFirstPlace) {
+      firstPlaceAudioRef.current?.play().catch(() => {})
+      return
+    }
+
+    if (gainedPoints) {
+      winAudioRef.current?.play().catch(() => {})
+      return
+    }
+
     if (currentScore === prevScore) {
       loseAudioRef.current?.play().catch(() => {})
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [])
+  }, [currentPlayerId, players, previousScoresByPlayerId, scoresByPlayerId])
 
   // Display rows (order changes between phase 1 → 2)
   const [rows, setRows] = useState<PlayerRow[]>([])

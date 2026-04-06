@@ -101,6 +101,7 @@ export const GameView = ({ currentRoom, playerId, onSubmitAnswer }: GameViewProp
 
   const targetStyle = colorStyleMap[gameState.targetColor ?? ''] ?? fallbackStyle
   const isMatchMode = gameConfig.mode === 'match_target'
+  const isScoringPhase = gameState.phase === 'scoring'
   const roundProgress = gameConfig.totalRounds > 0 ? (gameState.currentRound / gameConfig.totalRounds) * 100 : 0
 
   /* ─── Pre-game countdown ─── */
@@ -341,40 +342,42 @@ export const GameView = ({ currentRoom, playerId, onSubmitAnswer }: GameViewProp
             </div>
 
             {/* ── Scoring Dialog ── */}
-            <Dialog open={gameState.phase === 'scoring'}>
-              <DialogContent
-                hideCloseButton
-                onEscapeKeyDown={(e) => e.preventDefault()}
-                onPointerDownOutside={(e) => e.preventDefault()}
-                onInteractOutside={(e) => e.preventDefault()}
-                className="max-w-md rounded-[28px] border-white/70 bg-white/90 p-6 shadow-[0_30px_90px_-40px_rgba(15,23,42,0.55)] backdrop-blur-xl sm:max-w-lg sm:rounded-[32px] sm:p-8"
-              >
-                {/* Decorative gradient */}
-                <div className="pointer-events-none absolute inset-x-0 top-0 h-24 rounded-t-[28px] bg-gradient-to-r from-amber-200/60 via-rose-100/60 to-violet-200/60 sm:rounded-t-[32px]" />
-                <div className="pointer-events-none absolute -right-6 top-6 h-28 w-28 rounded-full bg-amber-300/25 blur-3xl" />
-                <div className="pointer-events-none absolute -left-6 bottom-6 h-28 w-28 rounded-full bg-violet-300/25 blur-3xl" />
+            <Dialog open={isScoringPhase}>
+              {isScoringPhase && (
+                <DialogContent
+                  hideCloseButton
+                  onEscapeKeyDown={(e) => e.preventDefault()}
+                  onPointerDownOutside={(e) => e.preventDefault()}
+                  onInteractOutside={(e) => e.preventDefault()}
+                  className="max-w-md rounded-[28px] border-white/70 bg-white/90 p-6 shadow-[0_30px_90px_-40px_rgba(15,23,42,0.55)] backdrop-blur-xl sm:max-w-lg sm:rounded-[32px] sm:p-8"
+                >
+                  {/* Decorative gradient */}
+                  <div className="pointer-events-none absolute inset-x-0 top-0 h-24 rounded-t-[28px] bg-gradient-to-r from-amber-200/60 via-rose-100/60 to-violet-200/60 sm:rounded-t-[32px]" />
+                  <div className="pointer-events-none absolute -right-6 top-6 h-28 w-28 rounded-full bg-amber-300/25 blur-3xl" />
+                  <div className="pointer-events-none absolute -left-6 bottom-6 h-28 w-28 rounded-full bg-violet-300/25 blur-3xl" />
 
-                <div className="relative">
-                  <div className="mb-4 flex flex-col items-center gap-1">
-                    <div className="flex items-center gap-2">
-                      <Trophy className="h-5 w-5 text-amber-500" />
-                      <DialogTitle className="text-lg font-black uppercase tracking-widest text-slate-800">
-                        {t('game.scoreboard')}
-                      </DialogTitle>
+                  <div className="relative">
+                    <div className="mb-4 flex flex-col items-center gap-1">
+                      <div className="flex items-center gap-2">
+                        <Trophy className="h-5 w-5 text-amber-500" />
+                        <DialogTitle className="text-lg font-black uppercase tracking-widest text-slate-800">
+                          {t('game.scoreboard')}
+                        </DialogTitle>
+                      </div>
+                      <DialogDescription className="text-xs font-medium text-slate-400">
+                        {t('game.roundLabel', { current: gameState.currentRound, total: gameConfig.totalRounds })}
+                      </DialogDescription>
                     </div>
-                    <DialogDescription className="text-xs font-medium text-slate-400">
-                      {t('game.roundLabel', { current: gameState.currentRound, total: gameConfig.totalRounds })}
-                    </DialogDescription>
-                  </div>
 
-                  <ScoringScoreboard
-                    players={currentRoom.players}
-                    scoresByPlayerId={currentRoom.scoresByPlayerId}
-                    previousScoresByPlayerId={scoresBeforeScoringRef.current}
-                    currentPlayerId={playerId}
-                  />
-                </div>
-              </DialogContent>
+                    <ScoringScoreboard
+                      players={currentRoom.players}
+                      scoresByPlayerId={currentRoom.scoresByPlayerId}
+                      previousScoresByPlayerId={scoresBeforeScoringRef.current}
+                      currentPlayerId={playerId}
+                    />
+                  </div>
+                </DialogContent>
+              )}
             </Dialog>
           </div>
         </Card>
