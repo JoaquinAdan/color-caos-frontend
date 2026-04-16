@@ -40,14 +40,18 @@ export const RoomView = ({ currentRoom, playerId, onStartGame, isStartingGame, o
     const socket = getSocket()
     setIsSavingSettings(true)
 
-    socket.emit('room:update-settings', { roomCode: currentRoom.code, maxPlayers, hostPlayerId: playerId, gameMode, answerWindowSeconds }, (response) => {
-      setIsSavingSettings(false)
-      if (response.success) {
-        setIsSettingsOpen(false)
-      } else {
-        console.error('Error al actualizar configuración:', response.error)
-      }
-    })
+    socket.emit(
+      'room:update-settings',
+      { roomCode: currentRoom.code, maxPlayers, hostPlayerId: playerId, gameMode, answerWindowSeconds },
+      (response) => {
+        setIsSavingSettings(false)
+        if (response.success) {
+          setIsSettingsOpen(false)
+        } else {
+          console.error('Error al actualizar configuración:', response.error)
+        }
+      },
+    )
   }
 
   return (
@@ -136,12 +140,15 @@ export const RoomView = ({ currentRoom, playerId, onStartGame, isStartingGame, o
               </div>
 
               <div className="grid gap-3 sm:grid-cols-3">
-                <div className="rounded-[24px] border border-white/70 bg-white/75 p-4 shadow-sm backdrop-blur">
+                <div
+                  onClick={() => setIsSettingsOpen(true)}
+                  className="rounded-3xl border border-white/70 cursor-pointer bg-white/75 p-4 shadow-sm backdrop-blur"
+                >
                   <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">{t('room.mode')}</p>
                   <p className="mt-2 text-sm font-bold text-slate-900">{modeLabel}</p>
                 </div>
 
-                <div className="rounded-[24px] border border-white/70 bg-white/75 p-4 shadow-sm backdrop-blur">
+                <div className="rounded-3xl border border-white/70 bg-white/75 p-4 shadow-sm backdrop-blur">
                   <p className="text-xs font-semibold uppercase tracking-[0.22em] text-slate-500">
                     {isHost ? t('room.host') : t('room.status')}
                   </p>

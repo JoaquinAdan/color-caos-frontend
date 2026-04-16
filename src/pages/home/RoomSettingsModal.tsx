@@ -2,13 +2,7 @@ import { useEffect, useState } from 'react'
 import { motion, useReducedMotion } from 'framer-motion'
 import { useTranslation } from 'react-i18next'
 import { Gauge, Joystick, Timer } from 'lucide-react'
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
@@ -35,7 +29,7 @@ export const RoomSettingsModal = ({
   currentAnswerWindowSeconds,
   currentPlayersCount,
   onSave,
-  isSaving = false
+  isSaving = false,
 }: RoomSettingsModalProps) => {
   const { t } = useTranslation()
   const [maxPlayers, setMaxPlayers] = useState(currentMaxPlayers)
@@ -101,9 +95,9 @@ export const RoomSettingsModal = ({
     <Dialog open={isOpen} onOpenChange={handleOpenChange}>
       <DialogContent
         forceMount
-        className="max-w-md overflow-hidden rounded-[28px] border-white/70 bg-white/95 p-0 shadow-[0_30px_90px_-40px_rgba(15,23,42,0.55)] backdrop-blur-xl"
+        className="max-w-md max-h-dvh overflow-auto rounded-[28px] border-white/70 bg-white/95 p-0 shadow-[0_30px_90px_-40px_rgba(15,23,42,0.55)] backdrop-blur-xl"
       >
-        <motion.div {...panelMotion} className="relative [transform-style:preserve-3d]">
+        <motion.div {...panelMotion} className="relative transform-3d">
           <motion.div
             aria-hidden="true"
             className="pointer-events-none absolute -right-8 top-8 h-28 w-28 rounded-full bg-rose-300/35 blur-2xl"
@@ -119,7 +113,7 @@ export const RoomSettingsModal = ({
 
           <motion.div
             {...sectionMotion}
-            className="rounded-t-[28px] bg-gradient-to-r from-rose-200/80 via-amber-100/80 to-sky-200/80 px-6 pb-5 pt-8"
+            className="rounded-t-[28px] bg-linear-to-r from-rose-200/80 via-amber-100/80 to-sky-200/80 px-6 pb-5 pt-8"
           >
             <DialogHeader className="space-y-2 text-left">
               <motion.div
@@ -127,13 +121,9 @@ export const RoomSettingsModal = ({
                 animate={prefersReducedMotion ? undefined : { opacity: 1, scale: 1 }}
                 transition={prefersReducedMotion ? undefined : { delay: 0.08, duration: 0.28, ease: 'easeOut' }}
               >
-                <DialogTitle className="text-2xl font-black tracking-tight text-slate-950">
-                  {t('roomSettings.title')}
-                </DialogTitle>
+                <DialogTitle className="text-2xl font-black tracking-tight text-slate-950">{t('roomSettings.title')}</DialogTitle>
               </motion.div>
-              <DialogDescription className="max-w-sm text-sm leading-6 text-slate-600">
-                {t('roomSettings.description')}
-              </DialogDescription>
+              <DialogDescription className="max-w-sm text-sm leading-6 text-slate-600">{t('roomSettings.description')}</DialogDescription>
             </DialogHeader>
           </motion.div>
 
@@ -145,9 +135,7 @@ export const RoomSettingsModal = ({
             >
               <div className="flex items-center gap-2 text-slate-900">
                 <Gauge className="h-4 w-4" />
-                <h3 className="text-sm font-semibold uppercase tracking-[0.18em]">
-                  {t('roomSettings.maxPlayers')}
-                </h3>
+                <h3 className="text-sm font-semibold uppercase tracking-[0.18em]">{t('roomSettings.maxPlayers')}</h3>
               </div>
 
               <div className="space-y-2">
@@ -183,9 +171,7 @@ export const RoomSettingsModal = ({
             >
               <div className="flex items-center gap-2 text-slate-900">
                 <Joystick className="h-4 w-4" />
-                <h3 className="text-sm font-semibold uppercase tracking-[0.18em]">
-                  {t('roomSettings.gameMode')}
-                </h3>
+                <h3 className="text-sm font-semibold uppercase tracking-[0.18em]">{t('roomSettings.gameMode')}</h3>
               </div>
 
               <div className="space-y-2">
@@ -203,9 +189,7 @@ export const RoomSettingsModal = ({
                   <option value="avoid_target">{t('roomSettings.modeAvoidTarget')}</option>
                 </select>
                 <p className="text-xs leading-5 text-slate-500">
-                  {gameMode === 'match_target'
-                    ? t('roomSettings.modeMatchTargetHelp')
-                    : t('roomSettings.modeAvoidTargetHelp')}
+                  {gameMode === 'match_target' ? t('roomSettings.modeMatchTargetHelp') : t('roomSettings.modeAvoidTargetHelp')}
                 </p>
               </div>
             </motion.section>
@@ -216,9 +200,7 @@ export const RoomSettingsModal = ({
             >
               <div className="flex items-center gap-2 text-slate-900">
                 <Timer className="h-4 w-4" />
-                <h3 className="text-sm font-semibold uppercase tracking-[0.18em]">
-                  {t('roomSettings.answerWindow')}
-                </h3>
+                <h3 className="text-sm font-semibold uppercase tracking-[0.18em]">{t('roomSettings.answerWindow')}</h3>
               </div>
 
               <div className="space-y-3">
@@ -242,9 +224,7 @@ export const RoomSettingsModal = ({
                   <span>0.5s</span>
                   <span>5s</span>
                 </div>
-                <p className="text-xs leading-5 text-slate-500">
-                  {t('roomSettings.answerWindowHelp')}
-                </p>
+                <p className="text-xs leading-5 text-slate-500">{t('roomSettings.answerWindowHelp')}</p>
               </div>
             </motion.section>
 
@@ -268,11 +248,7 @@ export const RoomSettingsModal = ({
               >
                 {t('roomSettings.cancel')}
               </Button>
-              <Button
-                onClick={handleSave}
-                disabled={isSaving}
-                className="h-12 rounded-2xl text-base font-semibold"
-              >
+              <Button onClick={handleSave} disabled={isSaving} className="h-12 rounded-2xl text-base font-semibold">
                 {isSaving ? t('roomSettings.saving') : t('roomSettings.save')}
               </Button>
             </div>
